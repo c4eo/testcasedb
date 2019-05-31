@@ -14,7 +14,7 @@ class ReportsController < ApplicationController
   # GET /reports/1.xml
   def show
     authorize! :read, Report  
-    @report = Report.find(params[:id])
+    @report = Report.find(permitted_params[:id])
 
     # Since they can only see their own reports this isn't absolutely required, but we hve this as anextra layer of precaution    
     # Verify user can view this report. Must be in his product
@@ -43,7 +43,7 @@ class ReportsController < ApplicationController
   # GET /reports/1/edit
   def edit
     authorize! :update, Report
-    @report = Report.find(params[:id])
+    @report = Report.find(permitted_params[:id])
 
     # Since they can only see their own reports this isn't absolutely required, but we hve this as anextra layer of precaution    
     # Verify user can view this report. Must be in his product
@@ -62,7 +62,7 @@ class ReportsController < ApplicationController
   # POST /reports.xml
   def create
     authorize! :create, Report
-    @report = Report.new(params[:report])
+    @report = Report.new(permitted_params[:report])
     @report.user_id = current_user.id
 
     # Since they can only see their own reports this isn't absolutely required, but we hve this as anextra layer of precaution    
@@ -84,18 +84,18 @@ class ReportsController < ApplicationController
   # PUT /reports/1.xml
   def update
     authorize! :update, Report
-    @report = Report.find(params[:id])
+    @report = Report.find(permitted_params[:id])
 
     # Since they can only see their own reports this isn't absolutely required, but we hve this as anextra layer of precaution    
     # Verify user can view this report. Must be in his product
     unless @report.product.nil?
       authorize_product!(@report.product)
       # Verify that if they change the product, it is changed to a product they have access to.
-      authorize_product!(Product.find(params[:report][:product_id]))
+      authorize_product!(Product.find(permitted_params[:report][:product_id]))
     end 
         
     respond_to do |format|
-      if @report.update_attributes(params[:report])
+      if @report.update_attributes(permitted_params[:report])
         format.html { redirect_to(@report, :notice => 'Report was successfully updated.') }
       else
         format.html { render :action => "edit" }
@@ -107,7 +107,7 @@ class ReportsController < ApplicationController
   # DELETE /reports/1.xml
   def destroy
     authorize! :destroy, Report
-    @report = Report.find(params[:id])
+    @report = Report.find(permitted_params[:id])
     
     if @report.user_id == current_user.id
       @report.destroy
@@ -120,7 +120,7 @@ class ReportsController < ApplicationController
   # GET /reports/run/1
   def run
     authorize! :read, Report
-    @report = Report.find(params[:id])
+    @report = Report.find(permitted_params[:id])
     
     # Since they can only see their own reports this isn't absolutely required, but we hve this as anextra layer of precaution    
     # Verify user can view this report. Must be in his product
@@ -192,11 +192,11 @@ class ReportsController < ApplicationController
   # Get the versions for the current product
   # Then render the small versions drop down partial
   def update_version_select        
-    versions = Version.where(:product_id => params[:id]).order(:version) unless params[:id].blank?
+    versions = Version.where(:product_id => permitted_params[:id]).order(:version) unless permitted_params[:id].blank?
     
     # Since they can only see their own reports this isn't absolutely required, but we hve this as anextra layer of precaution    
     # Verify user can view this report. Must be in his product
-    authorize_product!( Product.find(params[:id]) )
+    authorize_product!( Product.find(permitted_params[:id]) )
     
     render :partial => "versions", :locals => { :versions => versions }
   end

@@ -14,7 +14,7 @@ class CustomFieldsController < ApplicationController
   # GET /custom_fields/1
   # GET /custom_fields/1.xml
   def show
-    @custom_field = CustomField.find(params[:id])
+    @custom_field = CustomField.find(permitted_params[:id])
     authorize! :read, @custom_field
     
     respond_to do |format|
@@ -37,14 +37,14 @@ class CustomFieldsController < ApplicationController
 
   # GET /custom_fields/1/edit
   def edit
-    @custom_field = CustomField.find(params[:id])
+    @custom_field = CustomField.find(permitted_params[:id])
     authorize! :update, @custom_field
   end
 
   # POST /custom_fields
   # POST /custom_fields.xml
   def create
-    @custom_field = CustomField.new(params[:custom_field])
+    @custom_field = CustomField.new(permitted_params[:custom_field])
     authorize! :create, @custom_field
     
     respond_to do |format|
@@ -61,11 +61,11 @@ class CustomFieldsController < ApplicationController
   # PUT /custom_fields/1
   # PUT /custom_fields/1.xml
   def update
-    @custom_field = CustomField.find(params[:id])
+    @custom_field = CustomField.find(permitted_params[:id])
     authorize! :update, @custom_field
     
     respond_to do |format|
-      if @custom_field.update_attributes(params[:custom_field])
+      if @custom_field.update_attributes(permitted_params[:custom_field])
         format.html { redirect_to(@custom_field, :notice => 'Custom field was successfully updated.') }
         format.xml  { head :ok }
       else
@@ -78,7 +78,7 @@ class CustomFieldsController < ApplicationController
   # DELETE /custom_fields/1
   # DELETE /custom_fields/1.xml
   def destroy
-    @custom_field = CustomField.find(params[:id])
+    @custom_field = CustomField.find(permitted_params[:id])
     authorize! :update, @custom_field
     
 	@custom_field.destroy

@@ -1,6 +1,4 @@
 class Task < ActiveRecord::Base
-  attr_accessible :user_id, :task, :description, :due_date, :completion_date, :status, :name, :assignment_id
-  
   belongs_to :user
   has_many :comments, :dependent => :destroy
 	belongs_to :assignment

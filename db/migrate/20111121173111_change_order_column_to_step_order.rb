@@ -1,4 +1,4 @@
-class ChangeOrderColumnToStepOrder < ActiveRecord::Migration
+class ChangeOrderColumnToStepOrder < ActiveRecord::Migration[4.2]
   def self.up
     rename_column :steps, :order, :step_number
   end

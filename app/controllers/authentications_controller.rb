@@ -1,5 +1,5 @@
 class AuthenticationsController < ApplicationController
-  skip_before_filter :require_login, only: [:create, :failure]
+  skip_before_action :require_login, only: [:create, :failure]
   def create
     omniauth = request.env['omniauth.auth']
     authentication = Authentication.find_by_provider_and_uid(omniauth['provider'], omniauth['uid'])  
@@ -39,7 +39,7 @@ class AuthenticationsController < ApplicationController
   end
 
   def destroy
-    @auth = current_user.authentications.find params[:authentication_id]
+    @auth = current_user.authentications.find permitted_params[:authentication_id]
     @auth.destroy
 
     redirect_to :back, :notice => "Authentication deleted."

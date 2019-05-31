@@ -1,4 +1,4 @@
-class CreateProductUsers < ActiveRecord::Migration
+class CreateProductUsers < ActiveRecord::Migration[4.2]
   def self.up
     create_table :product_users do |t|
       t.integer :product_id

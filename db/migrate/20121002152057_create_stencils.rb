@@ -1,4 +1,4 @@
-class CreateStencils < ActiveRecord::Migration
+class CreateStencils < ActiveRecord::Migration[4.2]
   def self.up
     create_table :stencils do |t|
       t.integer :product_id

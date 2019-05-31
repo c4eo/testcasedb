@@ -21,7 +21,7 @@ class TestPlansController < ApplicationController
   # GET /test_plans/1
   # GET /test_plans/1.xml
   def show
-    @test_plan = TestPlan.find(params[:id])
+    @test_plan = TestPlan.find(permitted_params[:id])
     @comment = Comment.new(:test_plan_id => @test_plan.id, :comment => 'Enter a new comment')
     authorize! :read, @test_plan
     
@@ -54,7 +54,7 @@ class TestPlansController < ApplicationController
   # GET /test_plans/new.xml
   def new
     @test_plan = TestPlan.new
-    # @test_cases = TestCase.find(:all)
+    # @test_cases = TestCase.all
     @products = current_user.products.order('name')
     authorize! :create, @test_plan
 
@@ -71,7 +71,7 @@ class TestPlansController < ApplicationController
 
   # GET /test_plans/1/edit
   def edit
-    @test_plan = TestPlan.find(params[:id])
+    @test_plan = TestPlan.find(permitted_params[:id])
     @comment = Comment.new(:test_plan_id => @test_plan.id, :comment => 'Enter a new comment')
     
     # Verify user can view this test plan. Must be in his product
@@ -79,7 +79,7 @@ class TestPlansController < ApplicationController
     
     # If editing after assignment allowed or it is not assigned, start edit
     if (Setting.value('Allow Test Plan Edit After Assignment') == true) or (Assignment.where(:test_plan_id => @test_plan.id).count < 1)
-      # @test_cases = TestCase.find(:all)
+      # @test_cases = TestCase.all
       @products = current_user.products.order('name')
       @plan_id = @test_plan.id
       authorize! :update, @test_plan
@@ -102,7 +102,7 @@ class TestPlansController < ApplicationController
   # POST /test_plans
   # POST /test_plans.xml
   def create
-    @test_plan = TestPlan.new(params[:test_plan])
+    @test_plan = TestPlan.new(permitted_params[:test_plan])
     @comment = Comment.new(:test_plan_id => @test_plan.id, :comment => 'Enter a new comment')
     authorize! :create, @test_plan
     
@@ -121,14 +121,14 @@ class TestPlansController < ApplicationController
         
         # Redirect based on button. IF they clicked SAve and Add Test cases, go to edit view
         # Otherwise, load show page
-        if params[:commit] == "Save and Add Test Cases"
+        if permitted_params[:commit] == "Save and Add Test Cases"
           format.html { redirect_to(edit_test_plan_path(@test_plan), :notice => 'Test plan was successfully created. Please add cases.') }
         else
           format.html { redirect_to(@test_plan, :notice => 'Test plan was successfully created.') }
         end
       # If there was an error, return to the new page
       else      
-        @products = Product.find(:all, :order => "name")
+        @products = Product.all.order(:name)
         format.html { render :action => "new" }
       end
     end
@@ -137,14 +137,14 @@ class TestPlansController < ApplicationController
   # PUT /test_plans/1
   # PUT /test_plans/1.xml
   def update
-    @test_plan = TestPlan.find(params[:id])
+    @test_plan = TestPlan.find(permitted_params[:id])
     @comment = Comment.new(:test_plan_id => @test_plan.id, :comment => 'Enter a new comment')
     authorize! :update, @test_plan
     
     # Verify user can view this test plan. Must be in his product
     authorize_product!(@test_plan.product)
     # Verify that if they change the product, it is changed to a product they have access to.
-    authorize_product!(Product.find(params[:test_plan][:product_id]))
+    authorize_product!(Product.find(permitted_params[:test_plan][:product_id]))
     
     # Set the created and modified by fields
     @test_plan.modified_by = current_user
@@ -155,9 +155,9 @@ class TestPlansController < ApplicationController
     # For each test case, we update the order number on Plan release
     # We only do the update if there were changes. There are no changes
     # when only removes or no changes made
-    if params['selectedCaseOrder'] != ""
+    if permitted_params['selectedCaseOrder'] != ""
       orderNum = 1
-      params['selectedCaseOrder'][2..-1].split('&c=').each do |id|
+      permitted_params['selectedCaseOrder'][2..-1].split('&c=').each do |id|
         plan_case = PlanCase.where(:test_case_id => id, :test_plan_id => @test_plan.id).first
         plan_case.case_order = orderNum
         plan_case.save
@@ -166,14 +166,14 @@ class TestPlansController < ApplicationController
     end
     
     respond_to do |format|
-      if @test_plan.update_attributes(params[:test_plan])
+      if @test_plan.update_attributes(permitted_params[:test_plan])
       #if @test_plan.save
         # Create item in log history
         # Action type based on value from en.yaml
         History.create(:test_plan_id => @test_plan.id, :action => 2, :user_id => current_user.id)
         format.html { redirect_to(@test_plan, :notice => 'Test plan was successfully updated.') }
       else
-        @products = Product.find(:all, :order => "name")
+        @products = Product.all.order(:name)
         @plan_id = @test_plan.id
         format.html { render :action => "edit" }
       end
@@ -183,7 +183,7 @@ class TestPlansController < ApplicationController
   # DELETE /test_plans/1
   # DELETE /test_plans/1.xml
   def destroy
-    @test_plan = TestPlan.find(params[:id])
+    @test_plan = TestPlan.find(permitted_params[:id])
     authorize! :destroy, @test_plan
     
     # Verify user can view this test plan. Must be in his product
@@ -207,7 +207,7 @@ class TestPlansController < ApplicationController
   # GET /test_plans/copy/1
   def copy
     # begin 
-      original_test_plan = TestPlan.find( params[:id] )
+      original_test_plan = TestPlan.find( permitted_params[:id] )
       
       # Verify user can view this test case. Must be in his product
       authorize_product!(original_test_plan.product)
@@ -225,7 +225,7 @@ class TestPlansController < ApplicationController
     authorize! :read, TestPlan
     # This is used for the simple search function.
     # Note that this currently utlizes the search module that is contained within the model.
-    if params[:search]
+    if permitted_params[:search]
       # find(:all, :conditions => ['name LIKE ?', "%#{search}%"])
       @test_plans = TestPlan.where(:product_id => current_user.products).where('name LIKE ?', "%#{params[:search]}%")
     else
@@ -236,7 +236,7 @@ class TestPlansController < ApplicationController
   # get /test_plans/create_new_version/:id
   def create_new_version
     begin 
-      original_test_plan = TestPlan.find( params[:id] )
+      original_test_plan = TestPlan.find( permitted_params[:id] )
       
       # Verify user can view this test plan. Must be in his product
       authorize_product!(original_test_plan.product)
@@ -278,14 +278,14 @@ class TestPlansController < ApplicationController
   # Done this way to calculate product name, category path
   def add_test_case
     # Find the case then load the JS
-    @test_case = TestCase.find(params[:id])
+    @test_case = TestCase.find(permitted_params[:id])
     
     # Verify user can view this test plan. Must be in his product
     authorize_product!(@test_case.product)
     
     # We need to pass this on. Plan ID is required for figuring out if a case is already included
     # in a test plan
-    @plan_id = params[:plan_id]
+    @plan_id = permitted_params[:plan_id]
     
     # Add the test case to the test plan
     test_plan = TestPlan.find(@plan_id)
@@ -302,11 +302,11 @@ class TestPlansController < ApplicationController
   # And actually remove item
   def remove_test_case
     # Find the case then load the JS
-    @test_case = TestCase.find(params[:id])
+    @test_case = TestCase.find(permitted_params[:id])
     
     # We need to pass this on. Plan ID is required for figuring out if a case is already included
     # in a test plan
-    @plan_id = params[:plan_id]
+    @plan_id = permitted_params[:plan_id]
     
     # Remove the test case from the test plan
     test_plan = TestPlan.find(@plan_id)
@@ -328,7 +328,7 @@ class TestPlansController < ApplicationController
     @test_plan = TestPlan.new
 
     # Product ID is required for the JS
-    @product_id = params[:product_id]
+    @product_id = permitted_params[:product_id]
     
     # Verify user can view this test plan. Must be in his product
     authorize_product!(Product.find(@product_id))
@@ -362,16 +362,16 @@ class TestPlansController < ApplicationController
   def list_categories
     # This function takes a product ID and returns a list of categories
     # JS returned.
-    @categories = Category.find_all_by_product_id(params[:product_id], :order => "name")
+    @categories = Category.where(product_id: permitted_params[:product_id]).order(:name)
     
     # We need to pass this on. Plan ID is required for figuring out if a case is already included
     # in a test plan
-    @plan_id = params[:plan_id]
+    @plan_id = permitted_params[:plan_id]
     
     # It seems unneccessary to get the product as it is related to the categories
     # however, if there are no categories, we still need to know which product we're deling with 
     # so we retrieve the product for the display
-    @product = Product.find(params[:product_id])
+    @product = Product.find(permitted_params[:product_id])
 
     # Verify user can view this test plan. Must be in his product
     authorize_product!(@product)
@@ -386,14 +386,14 @@ class TestPlansController < ApplicationController
     # This function takes a category ID and returns a list of sub-categories and test cases
     # JS is returned.
     # Pass @category_id to the js view so it knows which div to add code to
-    @category_id = params[:category_id]
+    @category_id = permitted_params[:category_id]
 
     # We need to pass this on. Plan ID is required for figuring out if a case is already included
     # in a test plan
-    @plan_id = params[:plan_id]
+    @plan_id = permitted_params[:plan_id]
     
     # Find all of the sub categories for this sub-category
-    @categories = Category.find(@category_id).categories(:order => "name")
+    @categories = Category.find(@category_id).categories
     
     # Find all of the test cases for this category
     @testcases = TestCase.where(:category_id => @category_id)

@@ -1,4 +1,4 @@
-class AddDeviceIdToResults < ActiveRecord::Migration
+class AddDeviceIdToResults < ActiveRecord::Migration[4.2]
   def self.up
     add_column :results, :device_id, :integer
   end

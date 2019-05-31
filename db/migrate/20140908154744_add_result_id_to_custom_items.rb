@@ -1,4 +1,4 @@
-class AddResultIdToCustomItems < ActiveRecord::Migration
+class AddResultIdToCustomItems < ActiveRecord::Migration[4.2]
   def self.up
     add_column :custom_items, :result_id, :integer
   end

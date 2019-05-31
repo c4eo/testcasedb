@@ -1,4 +1,4 @@
-class AddScheduleIdToAssignments < ActiveRecord::Migration
+class AddScheduleIdToAssignments < ActiveRecord::Migration[4.2]
   def self.up
     add_column :assignments, :schedule_id, :integer
   end

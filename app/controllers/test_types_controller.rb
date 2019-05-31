@@ -16,7 +16,7 @@ class TestTypesController < ApplicationController
   # GET /test_types/1
   # GET /test_types/1.xml
   def show
-    @test_type = TestType.find(params[:id])
+    @test_type = TestType.find(permitted_params[:id])
     authorize! :read, @test_type
     
     respond_to do |format|
@@ -37,20 +37,20 @@ class TestTypesController < ApplicationController
 
   # GET /test_types/1/edit
   def edit
-    @test_type = TestType.find(params[:id])
+    @test_type = TestType.find(permitted_params[:id])
     authorize! :update, @test_type
   end
 
   # POST /test_types
   # POST /test_types.xml
   def create
-    @test_type = TestType.new(params[:test_type])
+    @test_type = TestType.new(permitted_params[:test_type])
     authorize! :create, @test_type
     
     respond_to do |format|
       # If changes can be saved
       if @test_type.save
-        if params[:commit] == "Save and Create Additional"
+        if permitted_params[:commit] == "Save and Create Additional"
           format.html { redirect_to( new_test_type_path, :notice => 'Test type was successfully created. Please create another.') }
          # If it is just save, show the new user
         else
@@ -66,11 +66,11 @@ class TestTypesController < ApplicationController
   # PUT /test_types/1
   # PUT /test_types/1.xml
   def update
-    @test_type = TestType.find(params[:id])
+    @test_type = TestType.find(permitted_params[:id])
     authorize! :update, @test_type
     
     respond_to do |format|
-      if @test_type.update_attributes(params[:test_type])
+      if @test_type.update_attributes(permitted_params[:test_type])
         format.html { redirect_to(@test_type, :notice => 'Test type was successfully updated.') }
       else
         format.html { render :action => "edit" }
@@ -81,7 +81,7 @@ class TestTypesController < ApplicationController
   # DELETE /test_types/1
   # DELETE /test_types/1.xml
   def destroy
-    @test_type = TestType.find(params[:id])
+    @test_type = TestType.find(permitted_params[:id])
     authorize! :destroy, @test_type
     
 	  if ( TestCase.where(:test_type_id => @test_type.id).count > 0 )

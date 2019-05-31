@@ -1,4 +1,4 @@
-class UpdateHistoriesTable < ActiveRecord::Migration
+class UpdateHistoriesTable < ActiveRecord::Migration[4.2]
   def self.up
     remove_column :histories, :result_case_id
     add_column :histories, :result_id, :integer

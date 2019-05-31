@@ -11,7 +11,7 @@ RSpec.describe 'Users API', :type => :request do
       "Accept" => "application/json",
       "Content-Type" => "application/json"
     }
-    post "api/users/search.json", params, request_headers
+    post "/api/users/search.json", params: params, headers: request_headers
     expect(JSON.parse(response.body)['found']).to eq(false)
     expect(response.status).to eq(200) 
   end
@@ -25,7 +25,7 @@ RSpec.describe 'Users API', :type => :request do
       "Accept" => "application/json",
       "Content-Type" => "application/json"
     }
-    post "api/users/search.json", params, request_headers
+    post "/api/users/search.json", params: params, headers: request_headers
     expect(JSON.parse(response.body)['found']).to eq(true)
     expect(JSON.parse(response.body)).to have_key('users')
     expect(JSON.parse(response.body)['users'].count).to eq(1)
@@ -40,7 +40,7 @@ RSpec.describe 'Users API', :type => :request do
       "Accept" => "application/json",
       "Content-Type" => "application/json"
     }
-    post "api/users/roles.json", params, request_headers
+    post "/api/users/roles.json", params: params, headers: request_headers
     roles = {'message' => (I18n.t :user_roles)}.to_json
     expect(response.body).to eq(roles)   
     expect(response.status).to eq(200) 

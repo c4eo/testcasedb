@@ -1,4 +1,4 @@
-class AddVersionsToTestPlans < ActiveRecord::Migration
+class AddVersionsToTestPlans < ActiveRecord::Migration[4.2]
   def self.up
     add_column :test_plans, :version, :integer, limit: 2, default: 1
     add_column :test_plans, :parent_id, :integer

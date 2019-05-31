@@ -1,28 +1,27 @@
 source 'http://rubygems.org'
 
-gem 'rails', '3.2.21'
-gem 'mysql2', group: :mysql
+ruby '2.3.0'
+
+gem 'rails', '5.2.3'
 gem 'pg', group: :postgres
 
-gem "unicorn", "~> 4.8.2"
+gem "puma"
 
 gem 'sidekiq'
 
 # Gems used only for assets and not required
 # in production environments by default.
 group :assets do
-  gem 'coffee-rails', '~> 3.2.1'
-
   # See https://github.com/sstephenson/execjs#readme for more supported runtimes
   # gem 'therubyracer', :platforms => :ruby
 
   gem 'uglifier', '>= 1.0.3'
-  gem 'therubyracer', :platforms => :ruby
+  gem 'therubyracer', '0.12.0', :platforms => :ruby
 end
 
 gem 'best_in_place', '~> 3.0.1'
-gem 'jquery-fileupload-rails'
-gem 'sass-rails',   '~> 3.2.3'
+gem 'jquery-fileupload-rails', '0.4.7'
+gem 'sass-rails',   '~> 5.0.7'
 gem 'bootstrap-sass', '~> 2.3.2.1'
 
 gem "jquery-rails"
@@ -41,10 +40,10 @@ gem "nifty-generators", :group => :development
 
 #require 'mysql2'
 
-gem "cocaine", "0.3.2"
+gem "cocaine", "0.4"
 gem "nokogiri"
 gem "expectr", "~> 0.9.0"
-gem 'paperclip', "~> 2.7.2"
+gem 'paperclip', "~> 5.1"
 gem "remotipart", "~> 1.0"
 gem 'mime-types'
 
@@ -100,8 +99,11 @@ gem 'selenium-client'
 # gem "mocha", :group => :test
 gem 'blitz'
 group :development, :test do
-  gem 'rspec-rails', '~> 3.0.0'
-  gem "factory_girl_rails"
-  gem "capybara", '>= 2.2.0'
+  gem 'rspec-rails', '~> 3.8.2'
+  gem "factory_bot"
+  gem "capybara", '~> 2.2.0'
+  gem 'database_cleaner'
+  gem 'test-unit'
+  gem 'pry-rails'
   gem 'database_cleaner'
 end

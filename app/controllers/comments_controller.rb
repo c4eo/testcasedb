@@ -3,9 +3,9 @@ class CommentsController < ApplicationController
   # POST /comments.xml
   def create
     authorize! :create, Comment
-    if params[:test_case_id]
-  	  @test_case = TestCase.find(params[:test_case_id])
-      @comment = @test_case.comments.build(params[:comment])
+    if permitted_params[:test_case_id]
+  	  @test_case = TestCase.find(permitted_params[:test_case_id])
+      @comment = @test_case.comments.build(permitted_params[:comment])
       authorize! :create, @comment
       @comment.user_id = current_user.id
       @new_comment = Comment.new(:test_case_id => @test_case.id, :comment => 'Enter a new comment')  
@@ -18,9 +18,9 @@ class CommentsController < ApplicationController
           format.html { render :action => "new" }
         end
       end
-    elsif params[:test_plan_id]
-  	  @test_plan = TestPlan.find(params[:test_plan_id])
-      @comment = @test_plan.comments.build(params[:comment])
+    elsif permitted_params[:test_plan_id]
+  	  @test_plan = TestPlan.find(permitted_params[:test_plan_id])
+      @comment = @test_plan.comments.build(permitted_params[:comment])
       authorize! :create, @comment
       @comment.user_id = current_user.id
       @new_comment = Comment.new(:test_plan_id => @test_plan.id, :comment => 'Enter a new comment')    
@@ -33,9 +33,9 @@ class CommentsController < ApplicationController
           format.html { render :action => "new" }
         end
       end
-    elsif params[:task_id]
-  	  @task = Task.find(params[:task_id])
-      @comment = @task.comments.build(params[:comment])
+    elsif permitted_params[:task_id]
+  	  @task = Task.find(permitted_params[:task_id])
+      @comment = @task.comments.build(permitted_params[:comment])
       authorize! :create, @comment
       @comment.user_id = current_user.id
       @new_comment = Comment.new(:task_id => @task.id, :comment => 'Enter a new comment')    

@@ -1,4 +1,4 @@
-class RemoveTestTypeCreated < ActiveRecord::Migration
+class RemoveTestTypeCreated < ActiveRecord::Migration[4.2]
   def self.up
 	  remove_column :test_types, :created
   end

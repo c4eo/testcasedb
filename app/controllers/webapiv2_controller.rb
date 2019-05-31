@@ -3,7 +3,7 @@ require 'base64'
 require 'fileutils'
 
 class Webapiv2Controller < ApplicationController
-  skip_before_filter :require_login
+  skip_before_action :require_login
 
   def validate_request(request)
     request_ok = false
@@ -12,7 +12,7 @@ class Webapiv2Controller < ApplicationController
       begin
         request_data = JSON.parse(request.body.read)
         request_ok = true
-      rescue
+      rescue => e
         message = 'Unable to parse JSON request data.'
         status = 400 
       end
@@ -20,7 +20,7 @@ class Webapiv2Controller < ApplicationController
       begin
         request_data = Hash.from_xml(request.body.read)
         request_ok = true
-      rescue
+      rescue => e
         message = 'Unable to parse XML request data.'
         status = 400         
       end      
@@ -85,31 +85,31 @@ class Webapiv2Controller < ApplicationController
     response_hash = nil
     request_ok, request_data = validate_request(request)    
     return if !request_ok || !authenticate_api_user(request_data)    
-    case params[:object]
+    case permitted_params[:object]
     when 'products'
-      response_hash = _products(params[:endpoint], request_data)
+      response_hash = _products(permitted_params[:endpoint], request_data)
     when 'users'
-      response_hash = _users(params[:endpoint], request_data)
+      response_hash = _users(permitted_params[:endpoint], request_data)
     when 'versions'
-      response_hash = _versions(params[:endpoint], request_data)
+      response_hash = _versions(permitted_params[:endpoint], request_data)
     when 'devices'
-      response_hash = _devices(params[:endpoint], request_data)
+      response_hash = _devices(permitted_params[:endpoint], request_data)
     when 'categories'
-      response_hash = _categories(params[:endpoint], request_data)
+      response_hash = _categories(permitted_params[:endpoint], request_data)
     when 'tags'
-      response_hash = _tags(params[:endpoint], request_data)
+      response_hash = _tags(permitted_params[:endpoint], request_data)
     when 'test_cases'
-      response_hash = _test_cases(params[:endpoint], request_data)
+      response_hash = _test_cases(permitted_params[:endpoint], request_data)
     when 'test_plans'
-      response_hash = _test_plans(params[:endpoint], request_data)     
+      response_hash = _test_plans(permitted_params[:endpoint], request_data)     
     when 'stencils'
-      response_hash = _stencils(params[:endpoint], request_data)       
+      response_hash = _stencils(permitted_params[:endpoint], request_data)       
     when 'assignments'
-      response_hash = _assignments(params[:endpoint], request_data)
+      response_hash = _assignments(permitted_params[:endpoint], request_data)
     when 'results'
-      response_hash = _results(params[:endpoint], request_data)                                                                                                  
+      response_hash = _results(permitted_params[:endpoint], request_data)                                                                                                  
     when 'attachments'
-      response_hash = _attachments(params[:endpoint], request_data)                                                                                                  
+      response_hash = _attachments(permitted_params[:endpoint], request_data)                                                                                                  
     end
     if response_hash.nil?
       response_hash = {'response' => {'message' => 'Invalid API endpoint.'}, 'status' => 400}
@@ -128,7 +128,7 @@ class Webapiv2Controller < ApplicationController
                :status => 400
       }                          
     end          
-  rescue
+  rescue => e
     respond_to do |format|
       format.json {
         render :json => {'message' => 'Exception'},
@@ -271,7 +271,7 @@ class Webapiv2Controller < ApplicationController
     when 'create'
       return _assignments_create(request_data)
     end
-    return nil   
+    return nil
   end
   
   def _results(endpoint, request_data)
@@ -491,7 +491,7 @@ class Webapiv2Controller < ApplicationController
     conditions = {:name => name,
                   :id => id }            
     conditions.delete_if {|k,v| v.blank? }     
-    test_types = TestType.find(:all, :conditions => conditions)    
+    test_types = TestType.where(conditions)    
     test_types = test_types.map do |tt|
       { id: tt[:id],
         name: tt[:name],
@@ -551,7 +551,7 @@ class Webapiv2Controller < ApplicationController
     conditions = {:name => request_data['name'],
                   :id => request_data['id'] }
     conditions.delete_if {|k,v| v.blank? }    
-    products = Product.find(:all, :conditions => conditions)
+    products = Product.where(conditions)
     if products != []
       response_hash["products"] = 
         products.map do |p|
@@ -613,7 +613,7 @@ class Webapiv2Controller < ApplicationController
                   :first_name => request_data['first_name'],
                   :last_name => request_data['last_name'] }
     conditions.delete_if {|k,v| v.blank? }    
-    users = User.find(:all, :conditions => conditions)
+    users = User.where(conditions)
     if users != []
       response_hash["users"] = 
         users.map do |u|
@@ -659,7 +659,7 @@ class Webapiv2Controller < ApplicationController
                   :version => request_data['version'],
                   :product_id => product ? product.id : nil}
     conditions.delete_if {|k,v| v.blank?}    
-    versions = Version.find(:all, :conditions => conditions, :order => "id ASC") 
+    versions = Version.where(conditions).order(id: :ASC) 
     if versions != []
       versions_map = 
         versions.map do |v|
@@ -735,7 +735,7 @@ class Webapiv2Controller < ApplicationController
                   :id => request_data['id'],
                   :description => request_data['description']}
     conditions.delete_if {|k,v| v.blank? }    
-    devices = Device.find(:all, :conditions => conditions)
+    devices = Device.where(conditions)
     matching_devices = []
     if devices != []      
       if request_data['custom_fields']
@@ -949,7 +949,7 @@ class Webapiv2Controller < ApplicationController
     conditions = {:name => request_data['name'],
                   :id => request_data['id'] }
     conditions.delete_if {|k,v| v.blank? }    
-    tags = Tag.find(:all, :conditions => conditions)
+    tags = Tag.where(conditions)
     if tags != []
       response_hash["tags"] = 
         tags.map do |t|
@@ -1018,7 +1018,7 @@ class Webapiv2Controller < ApplicationController
         conditions[:product_id] = product.id
       end
       conditions.delete_if {|k,v| v.blank? }    
-      test_case = TestCase.find(:all, :conditions => conditions) 
+      test_case = TestCase.where(conditions) 
       if test_case == []
         response_hash = {
           'response' => {'message' => 'Test case "%s" not found for product "%s" in category hierarchy "%s".' \
@@ -1430,7 +1430,7 @@ class Webapiv2Controller < ApplicationController
                   :name => request_data['name'],
                   :deprecated => request_data['deprecated']}                  
     conditions.delete_if {|k,v| v.blank?}    
-    test_plans = TestPlan.find(:all, :conditions => conditions, :order => "id ASC")     
+    test_plans = TestPlan.where(conditions).order(id: :ASC)     
     if test_plans == []
       response_hash = {
         'response' => {'message' => "No Test Plan(s) found. Try searching based on another parameter.",
@@ -1755,7 +1755,7 @@ class Webapiv2Controller < ApplicationController
                   :name => request_data['name'],
                   :deprecated => request_data['deprecated']}                  
     conditions.delete_if {|k,v| v.blank?}    
-    stencils = Stencil.find(:all, :conditions => conditions, :order => "id ASC")     
+    stencils = Stencil.where(conditions).order(id: :ASC)     
     if stencils == []
       response_hash = {
         'response' => {'message' => "No Stencil(s) found. Try searching based on another parameter.",
@@ -2058,7 +2058,7 @@ class Webapiv2Controller < ApplicationController
                   :test_plan_id => request_data['test_plan_id'],
                   :stencil_id => request_data['stencil_id']}
     conditions.delete_if {|k,v| v.blank?}    
-    assignments = Assignment.find(:all, :conditions => conditions, :order => "id ASC")    
+    assignments = Assignment.where(conditions).order(id: :ASC)    
     if assignments != []
       response_hash["assignments"] = 
         assignments.map do |a|
@@ -2193,7 +2193,7 @@ class Webapiv2Controller < ApplicationController
                   :device_id => request_data['device_id'],
                   :test_case_id => request_data['test_case_id']}
     conditions.delete_if {|k,v| v.blank?}    
-    results = Result.find(:all, :conditions => conditions, :order => "id ASC")
+    results = Result.where(conditions).order(id: :ASC)
     if results != []
       results_map = 
         results.map do |result|
@@ -2228,7 +2228,7 @@ class Webapiv2Controller < ApplicationController
     if request_data['results'].is_a?(Hash) \
        && !request_data['results'].empty?
       incorrect_fields = request_data['results'].map {|k,v| (v.is_a?(Hash) && !v.empty?) ? nil : k.to_s}.compact
-      if incorrect_fields.count > 0        
+      if incorrect_fields.count > 0
         return {'response' => {'message' => 'One or more passed results were not of the correct type or empty.'},
                 'status' => 400}        
       end               
@@ -2344,7 +2344,7 @@ class Webapiv2Controller < ApplicationController
       if request_data['attachments'].is_a?(Array) \
          && !request_data['attachments'].empty?
         incorrect_fields = request_data['attachments'].map {|x| (x.is_a?(Hash) && !x.empty?) ? nil : x}.compact
-        if incorrect_fields.count > 0        
+        if incorrect_fields.count > 0  
           return {'response' => {'message' => 'One or more passed attachments were not of the correct type or empty.'},
                   'status' => 400}        
         end       
@@ -2404,7 +2404,7 @@ class Webapiv2Controller < ApplicationController
                   :uploadable_id => request_data['parent_id'],
                   :uploadable_type => request_data['parent_type'] }
     conditions.delete_if {|k,v| v.blank? }    
-    uploads = Upload.find(:all, :conditions => conditions)
+    uploads = Upload.where(conditions)
     if uploads != []
       response_hash["attachments"] = 
         uploads.map do |u|

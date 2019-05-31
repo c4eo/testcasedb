@@ -10,28 +10,28 @@ class AssignmentsController < ApplicationController
     # There is a filter option on the assignments page We need to provide results based on filter.
     
     # What a product search filter provided
-    if (params[:product] && Product.all.collect(&:id).include?(params[:product][:id].to_i))
+    if (permitted_params[:product] && Product.all.collect(&:id).include?(permitted_params[:product][:id].to_i))
       # If yes, remember item for page load
-      @selected_product_id = params[:product][:id]
+      @selected_product_id = permitted_params[:product][:id]
       
       # Verify user can view items for this product. Must be in his product
       authorize_product!(Product.find(@selected_product_id))
       
       # Was a version also provided?
-      if (params[:version] && Version.all.collect(&:id).include?(params[:version][:id].to_i))
+      if (permitted_params[:version] && Version.all.collect(&:id).include?(permitted_params[:version][:id].to_i))
         # If yes, remember the version and do a query based on product and version
         # With filter, Note, even with filter we still paginate.
-        @selected_version_id = params[:version][:id]
+        @selected_version_id = permitted_params[:version][:id]
         @assignments = Assignment.includes(:product, :version, :test_plan, :stencil).where(:product_id => @selected_product_id, :version_id => @selected_version_id).
-        order(sort_column + " " + sort_direction).page(params[:page]).per(20)
+        order(sort_column + " " + sort_direction).page(permitted_params[:page]).per(20)
       else
         # there was no version, but the was a product, so we search on product and paginate
         @assignments = Assignment.includes(:product, :version, :test_plan, :stencil).where(:product_id => @selected_product_id).order(sort_column + " " + sort_direction).
-        page(params[:page]).per(20)
+        page(permitted_params[:page]).per(20)
       end
     else
       # There was no version or product, so we return all assignments and paginate
-      @assignments = Assignment.includes(:product, :version, :test_plan, :stencil).where(:product_id => current_user.products).order(sort_column + " " + sort_direction).page(params[:page]).per(20)
+      @assignments = Assignment.includes(:product, :version, :test_plan, :stencil).where(:product_id => current_user.products).order(sort_column + " " + sort_direction).page(permitted_params[:page]).per(20)
     end
     respond_to do |format|
       format.html # index.html.erb
@@ -42,7 +42,7 @@ class AssignmentsController < ApplicationController
   # GET /assignments/1.xml
   def show
     authorize! :read, Assignment
-    @assignment = Assignment.find(params[:id])
+    @assignment = Assignment.find(permitted_params[:id])
     
     # Verify user can view items for this product. Must be in his product
     authorize_product!(@assignment.product)
@@ -66,22 +66,22 @@ class AssignmentsController < ApplicationController
     @assignment.task = Task.new
     
     # This is for the auto created task
-    @users_select = User.find(:all, :order => "last_name").collect {|u| [ u.first_name + ' ' + u.last_name, u.id ]}
+    @users_select = User.all.order(:last_name).collect {|u| [ u.first_name + ' ' + u.last_name, u.id ]}
         
     @products_select = current_user.products
     
     # Test Plans have an ssign link. To do this they submit test_plan_id as a param.
     # If test  plan ID is included, we set the test plan and product for the assignment.
     # This is provided as a convenience
-    if params[:test_plan_id]
-      @assignment.product_id = TestPlan.where(:id => params[:test_plan_id]).first.product_id
-      @assignment.test_plan_id = params[:test_plan_id].to_i
+    if permitted_params[:test_plan_id]
+      @assignment.product_id = TestPlan.where(:id => permitted_params[:test_plan_id]).first.product_id
+      @assignment.test_plan_id = permitted_params[:test_plan_id].to_i
       
       # Verify user can view items for this product. Must be in his product
       authorize_product!(@assignment.product)
-    elsif params[:stencil_id]
-      @assignment.product_id = Stencil.where(:id => params[:stencil_id]).first.product_id
-      @assignment.stencil_id = params[:stencil_id].to_i
+    elsif permitted_params[:stencil_id]
+      @assignment.product_id = Stencil.where(:id => permitted_params[:stencil_id]).first.product_id
+      @assignment.stencil_id = permitted_params[:stencil_id].to_i
 
       # Verify user can view items for this product. Must be in his product
       authorize_product!(@assignment.product)
@@ -104,7 +104,7 @@ class AssignmentsController < ApplicationController
   # GET /assignments/1/edit
   def edit
     authorize! :update, Assignment
-    @assignment = Assignment.find(params[:id])
+    @assignment = Assignment.find(permitted_params[:id])
     
     # Verify user can view items for this product. Must be in his product
     authorize_product!(@assignment.product)
@@ -120,14 +120,14 @@ class AssignmentsController < ApplicationController
   	end
     
     # This is for the related created task
-    @users_select = User.find(:all, :order => "last_name").collect {|u| [ u.first_name + ' ' + u.last_name, u.id ]}
+    @users_select = User.all.order(:last_name).collect {|u| [ u.first_name + ' ' + u.last_name, u.id ]}
   end
 
   # POST /assignments
   # POST /assignments.xml
   def create
     authorize! :create, Assignment
-    @assignment = Assignment.new(params[:assignment])
+    @assignment = Assignment.new(permitted_params[:assignment])
     
     # Verify user can view items for this product. Must be in his product
     authorize_product!(@assignment.product)
@@ -197,8 +197,8 @@ class AssignmentsController < ApplicationController
         end
       else
         # Are these the four items we need for failed create
-        @users_select = User.find(:all, :order => "last_name").collect {|u| [ u.first_name + ' ' + u.last_name, u.id ]}
-        @products_select = Product.find(:all).collect {|p| [ p.name, p.id ]}
+        @users_select = User.all.order(:last_name).collect {|u| [ u.first_name + ' ' + u.last_name, u.id ]}
+        @products_select = Product.all.collect {|p| [ p.name, p.id ]}
 
         logger.warn "Assignment not saved correctly}"
         format.html { render :action => "new" }
@@ -210,21 +210,21 @@ class AssignmentsController < ApplicationController
   # PUT /assignments/1.xml
   def update
     authorize! :update, Assignment
-    @assignment = Assignment.find(params[:id])
+    @assignment = Assignment.find(permitted_params[:id])
 
     # Verify user can view items for this product. Must be in his product
     authorize_product!(@assignment.product)
     
     respond_to do |format|
-      if @assignment.update_attributes(params[:assignment])
+      if @assignment.update_attributes(permitted_params[:assignment])
         # Create item in log history
         # Action type based on value from en.yaml
         History.create(:assignment_id => @assignment.id, :action => 2, :user_id => current_user.id)
         format.html { redirect_to(@assignment, :notice => 'Assignment was successfully updated.') }
       else
         # Are these the four items we need for failed create
-        @users_select = User.find(:all, :order => "last_name").collect {|u| [ u.first_name + ' ' + u.last_name, u.id ]}
-        @products_select = Product.find(:all).collect {|p| [ p.name, p.id ]}
+        @users_select = User.all.order(:last_name).collect {|u| [ u.first_name + ' ' + u.last_name, u.id ]}
+        @products_select = Product.all.collect {|p| [ p.name, p.id ]}
         #!# @versions = Version.find(:all)
         #!# @plans_select = TestPlan.find(:all).collect {|p| [ p.name + " | Version " + p.version.to_s, p.id ]}
         format.html { render :action => "edit" }
@@ -236,7 +236,7 @@ class AssignmentsController < ApplicationController
   # DELETE /assignments/1.xml
   def destroy
     authorize! :destroy, Assignment
-    @assignment = Assignment.find(params[:id])
+    @assignment = Assignment.find(permitted_params[:id])
     
     # Verify user can view items for this product. Must be in his product
     authorize_product!(@assignment.product)
@@ -256,9 +256,9 @@ class AssignmentsController < ApplicationController
   # Then render the small versions drop down partial
   def update_version_select
     # Verify user can view items for this product. Must be in his product
-    authorize_product!( Product.find(params[:id]) )
+    authorize_product!( Product.find(permitted_params[:id]) )
             
-    versions = Version.where(:product_id => params[:id]).order(:version) unless params[:id].blank?
+    versions = Version.where(:product_id => permitted_params[:id]).order(:version) unless permitted_params[:id].blank?
     render :partial => "versions", :locals => { :versions => versions }
   end 
   
@@ -267,9 +267,9 @@ class AssignmentsController < ApplicationController
   # Then render the small versions drop down partial
   def update_test_plan_select 
     # Verify user can view items for this product. Must be in his product
-    authorize_product!( Product.find(params[:id]) )
+    authorize_product!( Product.find(permitted_params[:id]) )
            
-    test_plans = TestPlan.where(:product_id => params[:id]).order(:name) unless params[:id].blank?
+    test_plans = TestPlan.where(:product_id => permitted_params[:id]).order(:name) unless permitted_params[:id].blank?
     render :partial => "test_plans", :locals => { :test_plans => test_plans }
   end
   
@@ -278,9 +278,9 @@ class AssignmentsController < ApplicationController
   # Then render the small stencils drop down partial
   def update_stencil_select 
     # Verify user can view items for this product. Must be in his product
-    authorize_product!( Product.find(params[:id]) )
+    authorize_product!( Product.find(permitted_params[:id]) )
            
-    stencils = Stencil.where(:product_id => params[:id]).order(:name) unless params[:id].blank?
+    stencils = Stencil.where(:product_id => permitted_params[:id]).order(:name) unless permitted_params[:id].blank?
     render :partial => "stencils", :locals => { :stencils => stencils }
   end
   
@@ -291,11 +291,11 @@ class AssignmentsController < ApplicationController
   # Set asc and name as default values
   def sort_column
     # We no longer use the old way as we accept nexted query results
-    # Assignment.column_names.include?(params[:sort]) ? params[:sort] : "product_id"
-    %w[id products.name versions.version test_plans.name stencils.name notes].include?(params[:sort]) ? params[:sort] : "id"
+    # Assignment.column_names.include?(permitted_params[:sort]) ? permitted_params[:sort] : "product_id"
+    %w[id products.name versions.version test_plans.name stencils.name notes].include?(permitted_params[:sort]) ? permitted_params[:sort] : "id"
   end
   
   def sort_direction
-    %w[asc desc].include?(params[:direction]) ? params[:direction] : "asc"
+    %w[asc desc].include?(permitted_params[:direction]) ? permitted_params[:direction] : "asc"
   end 
 end

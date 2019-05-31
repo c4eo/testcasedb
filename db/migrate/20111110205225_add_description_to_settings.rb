@@ -1,4 +1,4 @@
-class AddDescriptionToSettings < ActiveRecord::Migration
+class AddDescriptionToSettings < ActiveRecord::Migration[4.2]
   def self.up
     add_column :settings, :description, :string
   end

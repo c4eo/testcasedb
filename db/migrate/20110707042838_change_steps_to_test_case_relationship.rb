@@ -1,4 +1,4 @@
-class ChangeStepsToTestCaseRelationship < ActiveRecord::Migration
+class ChangeStepsToTestCaseRelationship < ActiveRecord::Migration[4.2]
   def self.up
     drop_table :steps_test_cases
 	  add_column :steps, :test_case_id, :integer

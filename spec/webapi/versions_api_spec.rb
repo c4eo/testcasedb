@@ -3,10 +3,10 @@ require "webapi/webapi_spec_helper"
 RSpec.describe 'Versions API', :type => :request do
   
   before(:each) do
-    @product_attr_hash = FactoryGirl.attributes_for(:product) 
+    @product_attr_hash = FactoryBot.attributes_for(:product) 
     @product = Product.create(@product_attr_hash)
-    @version_attr_hash = FactoryGirl.attributes_for(:version) 
-    @version_attr_hash_2 = FactoryGirl.attributes_for(:version_2)  
+    @version_attr_hash = FactoryBot.attributes_for(:version) 
+    @version_attr_hash_2 = FactoryBot.attributes_for(:version_2)  
   end  
    
   it "search not found" do
@@ -19,7 +19,7 @@ RSpec.describe 'Versions API', :type => :request do
       "Accept" => "application/json",
       "Content-Type" => "application/json"
     }
-    post "api/versions/search.json", params, request_headers
+    post "/api/versions/search.json", params: params, headers: request_headers
     expect(response.status).to eq(200)
     expect(JSON.parse(response.body)['found']).to eq(false) 
   end
@@ -34,7 +34,7 @@ RSpec.describe 'Versions API', :type => :request do
       "Accept" => "application/json",
       "Content-Type" => "application/json"
     }
-    post "api/versions/search.json", params, request_headers
+    post "/api/versions/search.json", params: params, headers: request_headers
     expect(response.status).to eq(200)     
     expect(JSON.parse(response.body)['found']).to eq(true)
     expect(JSON.parse(response.body)['versions'].count).to eq(1)
@@ -51,7 +51,7 @@ RSpec.describe 'Versions API', :type => :request do
       "Accept" => "application/json",
       "Content-Type" => "application/json"
     }
-    post "api/versions/search.json", params, request_headers
+    post "/api/versions/search.json", params: params, headers: request_headers
     expect(response.status).to eq(200)     
     expect(JSON.parse(response.body)['found']).to eq(true)
     expect(JSON.parse(response.body)['versions'].count).to eq(1)
@@ -69,7 +69,7 @@ RSpec.describe 'Versions API', :type => :request do
       "Accept" => "application/json",
       "Content-Type" => "application/json"
     }
-    post "api/versions/search.json", params, request_headers
+    post "/api/versions/search.json", params: params, headers: request_headers
     expect(response.status).to eq(200)     
     expect(JSON.parse(response.body)['found']).to eq(true)
     expect(JSON.parse(response.body)['versions'].count).to eq(2)
@@ -90,7 +90,7 @@ RSpec.describe 'Versions API', :type => :request do
       "Accept" => "application/json",
       "Content-Type" => "application/json"
     }
-    post "api/versions/create.json", params, request_headers
+    post "/api/versions/create.json", params: params, headers: request_headers
     expect(response.status).to eq(201)
     expect(JSON.parse(response.body)['version']).to eq(version)
     expect(JSON.parse(response.body)['description']).to eq(description)     

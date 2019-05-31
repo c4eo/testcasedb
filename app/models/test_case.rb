@@ -1,6 +1,4 @@
 class TestCase < ActiveRecord::Base
-  attr_accessible :name, :description, :test_type_id, :category_id, :product_id, :status, :custom_items_attributes, :steps_attributes, :test_case_targets_attributes, :created_by_id, :tag_ids
-  
   # Versioned test cases always belong to a parent test case.
   # We track the original parent in the parent_id field
   belongs_to :parent_case, :class_name => "TestCase", :foreign_key => "parent_id" 
@@ -10,7 +8,7 @@ class TestCase < ActiveRecord::Base
 	belongs_to :product
 	belongs_to :created_by, :class_name => "User", :foreign_key => "created_by_id"
 	belongs_to :modified_by, :class_name => "User", :foreign_key => "modified_by_id"
-	has_many :steps, :dependent => :destroy, :order => "step_number"
+	has_many :steps, -> { order('step_number') }, :dependent => :destroy
 	has_many :comments, :dependent => :destroy
 	has_many :plan_cases
 	has_many :test_plans, :through => :plan_cases

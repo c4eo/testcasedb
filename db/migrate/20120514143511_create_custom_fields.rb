@@ -1,4 +1,4 @@
-class CreateCustomFields < ActiveRecord::Migration
+class CreateCustomFields < ActiveRecord::Migration[4.2]
   def self.up
     create_table :custom_fields do |t|
       t.string :item_type, :limit => 15

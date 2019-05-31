@@ -1,4 +1,4 @@
-class AddDeviceIdToCustomItems < ActiveRecord::Migration
+class AddDeviceIdToCustomItems < ActiveRecord::Migration[4.2]
   def self.up
     add_column :custom_items, :device_id, :integer
   end

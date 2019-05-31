@@ -1,4 +1,4 @@
-class AddActiveToUsers < ActiveRecord::Migration
+class AddActiveToUsers < ActiveRecord::Migration[4.2]
   def self.up
     add_column :users, :active, :boolean
   end

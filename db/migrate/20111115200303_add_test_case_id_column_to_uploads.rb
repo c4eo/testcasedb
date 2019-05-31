@@ -1,4 +1,4 @@
-class AddTestCaseIdColumnToUploads < ActiveRecord::Migration
+class AddTestCaseIdColumnToUploads < ActiveRecord::Migration[4.2]
   def self.up
     add_column :uploads, :test_case_id, :integer
   end

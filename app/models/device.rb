@@ -1,6 +1,4 @@
-class Device < ActiveRecord::Base
-  attr_accessible :name, :description, :active, :custom_items_attributes
-  
+class Device < ActiveRecord::Base  
   has_many :schedules, :dependent => :destroy
   has_many :schedule_runs
   has_many :results

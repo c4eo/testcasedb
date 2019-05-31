@@ -3,15 +3,15 @@ require "webapi/webapi_spec_helper"
 RSpec.describe 'Test Cases API', :type => :request do
   
   before(:each) do
-    @product = Product.create(FactoryGirl.attributes_for(:product))
-    @category = Category.create(FactoryGirl.attributes_for(:category))
-    @sub_category = Category.create(FactoryGirl.attributes_for(:sub_category))
-    @version = Version.create(FactoryGirl.attributes_for(:version))    
-    @tag = Tag.create(FactoryGirl.attributes_for(:tag))
-    @tag_2 = Tag.create(FactoryGirl.attributes_for(:tag_2))
-    @test_type = TestType.create(FactoryGirl.attributes_for(:test_type))    
-    @test_case_attr_hash = FactoryGirl.attributes_for(:test_case) 
-    @test_2_case_attr_hash = FactoryGirl.attributes_for(:test_case_2)
+    @product = Product.create(FactoryBot.attributes_for(:product))
+    @category = Category.create(FactoryBot.attributes_for(:category))
+    @sub_category = Category.create(FactoryBot.attributes_for(:sub_category))
+    @version = Version.create(FactoryBot.attributes_for(:version))    
+    @tag = Tag.create(FactoryBot.attributes_for(:tag))
+    @tag_2 = Tag.create(FactoryBot.attributes_for(:tag_2))
+    @test_type = TestType.create(FactoryBot.attributes_for(:test_type))    
+    @test_case_attr_hash = FactoryBot.attributes_for(:test_case) 
+    @test_2_case_attr_hash = FactoryBot.attributes_for(:test_case_2)
     @custom_fields = [{'name' => 'custom field 1',
                        'value' => '1',
                        'type' => 'string'},
@@ -28,7 +28,7 @@ RSpec.describe 'Test Cases API', :type => :request do
       "Accept" => "application/json",
       "Content-Type" => "application/json"
     }
-    post "api/test_cases/statuses.json", params, request_headers
+    post "/api/test_cases/statuses.json", params: params, headers: request_headers
     expect(JSON.parse(response.body)['statuses']).to eq((I18n.t :item_status).stringify_keys)      
     expect(response.status).to eq(200) 
   end   
@@ -41,7 +41,7 @@ RSpec.describe 'Test Cases API', :type => :request do
       "Accept" => "application/json",
       "Content-Type" => "application/json"
     }
-    post "api/test_cases/types.json", params, request_headers
+    post "/api/test_cases/types.json", params: params, headers: request_headers
     expect(JSON.parse(response.body)['test_types'][0]['name']).to eq(@test_type.name)   
     expect(response.status).to eq(200) 
   end    
@@ -57,7 +57,7 @@ RSpec.describe 'Test Cases API', :type => :request do
       "Accept" => "application/json",
       "Content-Type" => "application/json"
     }
-    post "api/test_cases/search.json", params, request_headers
+    post "/api/test_cases/search.json", params: params, headers: request_headers
     expect(JSON.parse(response.body)['found']).to eq(false)
     expect(response.status).to eq(200) 
   end
@@ -74,7 +74,7 @@ RSpec.describe 'Test Cases API', :type => :request do
       "Accept" => "application/json",
       "Content-Type" => "application/json"
     }
-    post "api/test_cases/search.json", params, request_headers
+    post "/api/test_cases/search.json", params: params, headers: request_headers
     expect(JSON.parse(response.body)['found']).to eq(true)
     expect(response.status).to eq(200) 
   end  
@@ -91,7 +91,7 @@ RSpec.describe 'Test Cases API', :type => :request do
       "Accept" => "application/json",
       "Content-Type" => "application/json"
     }
-    post "api/test_cases/create.json", params, request_headers
+    post "/api/test_cases/create.json", params: params, headers: request_headers
     expect(response.status).to eq(400) 
   end  
   
@@ -108,7 +108,7 @@ RSpec.describe 'Test Cases API', :type => :request do
       "Accept" => "application/json",
       "Content-Type" => "application/json"
     }
-    post "api/test_cases/create.json", params, request_headers
+    post "/api/test_cases/create.json", params: params, headers: request_headers
     expect(response.status).to eq(201) 
   end  
   
@@ -125,7 +125,7 @@ RSpec.describe 'Test Cases API', :type => :request do
       "Accept" => "application/json",
       "Content-Type" => "application/json"
     }
-    post "api/test_cases/create.json", params, request_headers
+    post "/api/test_cases/create.json", params: params, headers: request_headers
     expect(response.status).to eq(400) 
   end  
   
@@ -142,7 +142,7 @@ RSpec.describe 'Test Cases API', :type => :request do
       "Accept" => "application/json",
       "Content-Type" => "application/json"
     }
-    post "api/test_cases/create.json", params, request_headers
+    post "/api/test_cases/create.json", params: params, headers: request_headers
     expect(response.status).to eq(400) 
   end  
   
@@ -162,7 +162,7 @@ RSpec.describe 'Test Cases API', :type => :request do
       "Accept" => "application/json",
       "Content-Type" => "application/json"
     }
-    post "api/test_cases/create.json", params, request_headers 
+    post "/api/test_cases/create.json", params: params, headers: request_headers 
     expect(response.status).to eq(201) 
     expect(JSON.parse(response.body)['category']).to eq(@category.name) 
     expect(JSON.parse(response.body)['id']).to eq(1)  
@@ -189,7 +189,7 @@ RSpec.describe 'Test Cases API', :type => :request do
       "Accept" => "application/json",
       "Content-Type" => "application/json"
     }
-    post "api/test_cases/create.json", params, request_headers
+    post "/api/test_cases/create.json", params: params, headers: request_headers
     expect(JSON.parse(response.body)['category']).to eq(category) 
     expect(JSON.parse(response.body)['id']).to eq(1)  
     expect(JSON.parse(response.body)['parent_id']).to eq(nil)  
@@ -212,14 +212,14 @@ RSpec.describe 'Test Cases API', :type => :request do
       "Accept" => "application/json",
       "Content-Type" => "application/json"
     }
-    post "api/test_cases/create.json", params.to_json, request_headers 
+    post "/api/test_cases/create.json", params: params.to_json, headers: request_headers 
     expect(JSON.parse(response.body)['category']).to eq(@category.name) 
     expect(JSON.parse(response.body)['id']).to eq(1)  
     expect(JSON.parse(response.body)['parent_id']).to eq(nil)  
     expect(response.status).to eq(201)
     # new version
     params['new_version'] = true
-    post "api/test_cases/create.json", params.to_json, request_headers
+    post "/api/test_cases/create.json", params: params.to_json, headers: request_headers
     expect(response.status).to eq(201)
     expect(JSON.parse(response.body)['version']).to eq(2) 
     expect(JSON.parse(response.body)['custom_fields'].count).to eq(2)
@@ -241,7 +241,7 @@ RSpec.describe 'Test Cases API', :type => :request do
       "Accept" => "application/json",
       "Content-Type" => "application/json"
     }
-    post "api/test_cases/search.json", params.to_json, request_headers
+    post "/api/test_cases/search.json", params: params.to_json, headers: request_headers
     expect(response.status).to eq(200) 
     expect(JSON.parse(response.body)['found']).to eq(true)    
     expect(JSON.parse(response.body)['name']).to eq(@test_case.name)
@@ -278,7 +278,7 @@ RSpec.describe 'Test Cases API', :type => :request do
         'tags' => [@tag.name, @tag_2.name]        
       },      
     }      
-    post "api/test_cases/update.json", params.to_json, request_headers    
+    post "/api/test_cases/update.json", params: params.to_json, headers: request_headers    
     expect(response.status).to eq(200)
     expect(JSON.parse(response.body)['name']).to eq(name)
     expect(JSON.parse(response.body)['description']).to eq(description)
@@ -312,7 +312,7 @@ RSpec.describe 'Test Cases API', :type => :request do
       "Accept" => "application/json",
       "Content-Type" => "application/json"
     }
-    post "api/test_cases/create.json", params, request_headers 
+    post "/api/test_cases/create.json", params: params, headers: request_headers 
     expect(response.status).to eq(200)
     expect(JSON.parse(response.body)['test_cases'].count).to eq(2)
     expect(JSON.parse(response.body)['test_cases'][0]['name']).to eq('case 1')
@@ -357,7 +357,7 @@ RSpec.describe 'Test Cases API', :type => :request do
       "Accept" => "application/json",
       "Content-Type" => "application/json"
     }
-    post "api/test_cases/update.json", params, request_headers 
+    post "/api/test_cases/update.json", params: params, headers: request_headers 
     expect(response.status).to eq(200)
     expect(JSON.parse(response.body)['test_cases'].count).to eq(2)
     expect(JSON.parse(response.body)['test_cases'][0]['name']).to eq(updated_name_1)

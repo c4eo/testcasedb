@@ -3,7 +3,7 @@ require "webapi/webapi_spec_helper"
 RSpec.describe 'Devices API', :type => :request do
    
   before(:each) do
-    @device_attr_hash = FactoryGirl.attributes_for(:device)
+    @device_attr_hash = FactoryBot.attributes_for(:device)
     @custom_fields = [{'name' => 'custom field 1',
                        'value' => '1',
                        'type' => 'string'},
@@ -21,7 +21,7 @@ RSpec.describe 'Devices API', :type => :request do
       "Accept" => "application/json",
       "Content-Type" => "application/json"
     }
-    post "api/devices/search.json", params, request_headers
+    post "/api/devices/search.json", params: params, headers: request_headers
     expect(JSON.parse(response.body)['found']).to eq(false)
     expect(response.status).to eq(200) 
   end
@@ -36,7 +36,7 @@ RSpec.describe 'Devices API', :type => :request do
       "Accept" => "application/json",
       "Content-Type" => "application/json"
     }
-    post "api/devices/search.json", params, request_headers
+    post "/api/devices/search.json", params: params, headers: request_headers
     expect(JSON.parse(response.body)['found']).to eq(true)
     expect(JSON.parse(response.body)).to have_key('devices')
     expect(JSON.parse(response.body)['devices'].count).to eq(1)    
@@ -56,7 +56,7 @@ RSpec.describe 'Devices API', :type => :request do
       "Accept" => "application/json",
       "Content-Type" => "application/json"
     }
-    post "api/devices/create.json", params, request_headers
+    post "/api/devices/create.json", params: params, headers: request_headers
     expect(JSON.parse(response.body)['name']).to eq(name)
     expect(JSON.parse(response.body)['description']).to eq(description)
     expect(JSON.parse(response.body)).to have_key('custom_fields')
@@ -75,7 +75,7 @@ RSpec.describe 'Devices API', :type => :request do
       "Accept" => "application/json",
       "Content-Type" => "application/json"
     }
-    post "api/devices/search.json", params, request_headers
+    post "/api/devices/search.json", params: params, headers: request_headers
     expect(JSON.parse(response.body)['found']).to eq(false)
     expect(response.status).to eq(200) 
   end  
@@ -91,7 +91,7 @@ RSpec.describe 'Devices API', :type => :request do
       "Accept" => "application/json",
       "Content-Type" => "application/json"
     }
-    post "api/devices/search.json", params, request_headers
+    post "/api/devices/search.json", params: params, headers: request_headers
     expect(JSON.parse(response.body)['found']).to eq(true)
     expect(JSON.parse(response.body)).to have_key('devices')
     expect(JSON.parse(response.body)['devices'].count).to eq(1)    
@@ -109,7 +109,7 @@ RSpec.describe 'Devices API', :type => :request do
       "Accept" => "application/json",
       "Content-Type" => "application/json"
     }
-    post "api/devices/search.json", params, request_headers
+    post "/api/devices/search.json", params: params, headers: request_headers
     expect(JSON.parse(response.body)['found']).to eq(false)
     expect(response.status).to eq(200) 
   end       
@@ -127,7 +127,7 @@ RSpec.describe 'Devices API', :type => :request do
       "Accept" => "application/json",
       "Content-Type" => "application/json"
     }
-    post "api/devices/create.json", params, request_headers   
+    post "/api/devices/create.json", params: params, headers: request_headers   
     expect(response.status).to eq(201)
     device = JSON.parse(response.body)
     params = {
@@ -140,7 +140,7 @@ RSpec.describe 'Devices API', :type => :request do
       "Accept" => "application/json",
       "Content-Type" => "application/json"
     }
-    post "api/devices/search.json", params, request_headers
+    post "/api/devices/search.json", params: params, headers: request_headers
     expect(JSON.parse(response.body)['found']).to eq(true)
     expect(JSON.parse(response.body)).to have_key('devices')
     expect(JSON.parse(response.body)['devices'].count).to eq(1)
@@ -160,7 +160,7 @@ RSpec.describe 'Devices API', :type => :request do
       "Accept" => "application/json",
       "Content-Type" => "application/json"
     }
-    post "api/devices/create.json", params, request_headers
+    post "/api/devices/create.json", params: params, headers: request_headers
     expect(response.status).to eq(201) 
     expect(JSON.parse(response.body)['name']).to eq(@device.name)
     expect(JSON.parse(response.body)['description']).to eq(description)  
@@ -178,7 +178,7 @@ RSpec.describe 'Devices API', :type => :request do
       "Accept" => "application/json",
       "Content-Type" => "application/json"
     }
-    post "api/devices/create.json", params, request_headers
+    post "/api/devices/create.json", params: params, headers: request_headers
     expect(response.status).to eq(201) 
     expect(JSON.parse(response.body)['name']).to eq(@device.name)
     expect(JSON.parse(response.body)['description']).to eq(@device.description)

@@ -1,4 +1,4 @@
-class CreateTestCaseTargets < ActiveRecord::Migration
+class CreateTestCaseTargets < ActiveRecord::Migration[4.2]
   def self.up
     create_table :test_case_targets do |t|
       t.string :filename

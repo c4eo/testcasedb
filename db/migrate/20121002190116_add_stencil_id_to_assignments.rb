@@ -1,4 +1,4 @@
-class AddStencilIdToAssignments < ActiveRecord::Migration
+class AddStencilIdToAssignments < ActiveRecord::Migration[4.2]
   def self.up
     add_column :assignments, :stencil_id, :integer
   end

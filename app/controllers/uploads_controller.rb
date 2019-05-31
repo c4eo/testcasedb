@@ -4,7 +4,7 @@ class UploadsController < ApplicationController
   def create
     authorize! :create, Upload    
     
-    @upload = Upload.new(params[:upload])
+    @upload = Upload.new(permitted_params[:upload])
 
     respond_to do |format|
       if @upload.save
@@ -20,11 +20,11 @@ class UploadsController < ApplicationController
   end
  
   def update
-    @upload = Upload.find(params[:id])
+    @upload = Upload.find(permitted_params[:id])
     authorize! :update, @upload
     
     respond_to do |format|
-      if @upload.update_attributes(params[:upload])        
+      if @upload.update_attributes(permitted_params[:upload])        
         format.html { redirect_to(@upload, :notice => 'Product was successfully updated.') }
         format.json { respond_with_bip(@upload) }
       else
@@ -35,7 +35,7 @@ class UploadsController < ApplicationController
   end
    
   def destroy
-    @upload = Upload.find(params[:id])
+    @upload = Upload.find(permitted_params[:id])
     authorize! :destroy, Upload
     @upload_id = @upload.id
     @upload.destroy
@@ -49,11 +49,11 @@ class UploadsController < ApplicationController
   def download
     authorize! :read, Upload
     
-    head(:not_found) and return if (upload = Upload.find_by_id(params[:id])).nil?
+    head(:not_found) and return if (upload = Upload.find_by_id(permitted_params[:id])).nil?
     head(:forbidden) and return unless upload.downloadable?(current_user)
 
-    path = upload.upload.path(params[:style])
-    head(:bad_request) and return unless File.exist?(path) && params[:format].to_s == File.extname(path).gsub(/^\.+/, '')
+    path = upload.upload.path(permitted_params[:style])
+    head(:bad_request) and return unless File.exist?(path) && permitted_params[:format].to_s == File.extname(path).gsub(/^\.+/, '')
 
     # send_file_options = { :type => File.mime_type?(path) }
     send_file_options = { :type => 'application/octet-stream', :filename => upload.upload_file_name }
@@ -68,7 +68,7 @@ class UploadsController < ApplicationController
   
   # GET uploads/:id/executable
   def executable
-    upload = Upload.find(params[:id])
+    upload = Upload.find(permitted_params[:id])
     authorize! :execute, Upload
     
     @upload_id = upload.id

@@ -9,28 +9,28 @@ class ResultsController < ApplicationController
     # There is a filter option on the execute page We need to provide results based on filter.
     
     # What a product search filter provided
-    if (params[:product] && Product.all.collect(&:id).include?(params[:product][:id].to_i))
+    if (permitted_params[:product] && Product.all.collect(&:id).include?(permitted_params[:product][:id].to_i))
       # If yes, remember item for page load
-      @selected_product_id = params[:product][:id]
+      @selected_product_id = permitted_params[:product][:id]
       
       # Verify user can view items for this product. Must be in his product
       authorize_product!(Product.find(@selected_product_id))
       
       # Was a version also provided?
-      if (params[:version] && Version.all.collect(&:id).include?(params[:version][:id].to_i))
+      if (permitted_params[:version] && Version.all.collect(&:id).include?(permitted_params[:version][:id].to_i))
         # If yes, remember the version and do a query based on product and version
         # With filter, Note, even with filter we still paginate.
-        @selected_version_id = params[:version][:id]
+        @selected_version_id = permitted_params[:version][:id]
         @assignments = Assignment.includes(:product, :version, :test_plan, :stencil).where(:product_id => @selected_product_id, :version_id => @selected_version_id).
-        order(sort_column + " " + sort_direction).page(params[:page]).per(20)
+        order(sort_column + " " + sort_direction).page(permitted_params[:page]).per(20)
       else
         # there was no version, but the was a product, so we search on product and paginate
         @assignments = Assignment.includes(:product, :version, :test_plan, :stencil).where(:product_id => @selected_product_id).order(sort_column + " " + sort_direction).
-        page(params[:page]).per(20)
+        page(permitted_params[:page]).per(20)
       end
     else
       # There was no version or product, so we return all assignments and paginate
-      @assignments = Assignment.includes(:product, :version, :test_plan, :stencil).where(:product_id => current_user.products).order(sort_column + " " + sort_direction).page(params[:page]).per(20)
+      @assignments = Assignment.includes(:product, :version, :test_plan, :stencil).where(:product_id => current_user.products).order(sort_column + " " + sort_direction).page(permitted_params[:page]).per(20)
     end
     respond_to do |format|
       format.html # index.html.erb
@@ -41,7 +41,7 @@ class ResultsController < ApplicationController
   # GET /results/1.xml
   def show
     authorize! :read, Result
-    @result = Result.find(params[:id])
+    @result = Result.find(permitted_params[:id])
 
     # For results, we verify that the actual assignment product is visible
     # Verify user can view items for this product. Must be in his product
@@ -72,7 +72,7 @@ class ResultsController < ApplicationController
   # GET /results/1/edit
   def edit
     authorize! :update, Result
-    @result = Result.find(params[:id])
+    @result = Result.find(permitted_params[:id])
     
     # For results, we verify that the actual assignment product is visible
     # Verify user can view items for this product. Must be in his product
@@ -94,7 +94,7 @@ class ResultsController < ApplicationController
   # POST /results.xml
   def create
     authorize! :create, Result
-    @result = Result.new(params[:result])
+    @result = Result.new(permitted_params[:result])
 
     # For results, we verify that the actual assignment product is visible
     # Verify user can view items for this product. Must be in his product
@@ -113,7 +113,7 @@ class ResultsController < ApplicationController
   # PUT /results/1.xml
   def update
     authorize! :update, Result
-    @result = Result.find(params[:id])
+    @result = Result.find(permitted_params[:id])
     
     # For results, we verify that the actual assignment product is visible
     # Verify user can view items for this product. Must be in his product
@@ -122,27 +122,27 @@ class ResultsController < ApplicationController
     # First we check if the system is configured to require bugs
     # for blocks and failures. 
     # If there is an issue we manually set an error  
-    if params[:result][:result] == 'Failed'
+    if permitted_params[:result][:result] == 'Failed'
       if Setting.value('Require Bug For Failed Result') == true
         # Verify value not blank
-        if params[:result][:bugs] == ""
+        if permitted_params[:result][:bugs] == ""
           @result.errors.add :bugs, '- At least one valid bug number is required for a failed test case.'
         end
       end
       if Setting.value('Require Comment For Failed Result') == true
         # Verify value not blank
-        if params[:result][:note] == ""
+        if permitted_params[:result][:note] == ""
           @result.errors.add :note, '- A note is required for a failed test case.'
         end
       end
-    elsif params[:result][:result] == 'Blocked'
+    elsif permitted_params[:result][:result] == 'Blocked'
       if Setting.value('Require Bug For Blocked Result') == true
-        if params[:result][:bugs] == ""
+        if permitted_params[:result][:bugs] == ""
           @result.errors.add :bugs, '- At least one valid bug number is required for a blocked test case.'
         end
       end
       if Setting.value('Require Comment For Blocked Result') == true
-        if params[:result][:note] == ""
+        if permitted_params[:result][:note] == ""
           @result.errors.add :note, '- A note is required for a blocked test case.'
         end
       end
@@ -151,11 +151,11 @@ class ResultsController < ApplicationController
     end
     
     # If bugs is not blank and a ticketing system is set, we check that the values are valid
-    if params[:result][:bugs] != ""
+    if permitted_params[:result][:bugs] != ""
       if Setting.value('Ticket System') != 'none'
         # If ticket system is set, check that all bugs exist
         # need to send bug status an array of IDs so we split the comma separated list
-        results = Ticket.bug_status( params[:result][:bugs].split(',') )
+        results = Ticket.bug_status( permitted_params[:result][:bugs].split(',') )
         if results["error"] == true
           @result.errors.add :bugs, '- At least one entered bug number could not be found in the ticket system.'
         end
@@ -164,12 +164,12 @@ class ResultsController < ApplicationController
     
     # If there is no executed_at value and we now have a result
     # Set the execution time before updating attributes
-    if @result.executed_at.nil? && params[:result][:result]
-      params[:result][:executed_at] = DateTime.now
+    if @result.executed_at.nil? && permitted_params[:result][:result]
+      permitted_params[:result][:executed_at] = DateTime.now
     end
     
     # Note that we first check if errors were added above. If not, we try to update values
-    if @result.errors.empty? && @result.update_attributes(params[:result])
+    if @result.errors.empty? && @result.update_attributes(permitted_params[:result])
       # Create item in log history
       # Action type based on value from en.yaml
       if @result.result == "Passed"
@@ -194,12 +194,12 @@ class ResultsController < ApplicationController
       end
       
       # If the user wants to view the result, direct them to it
-      if params[:commit] == "Save and View" 
+      if permitted_params[:commit] == "Save and View" 
         redirect_to(@result, :notice => 'Result was successfully updated.')
       
       # Otherwise, direct them to the next test case to execute
       # This should be reviewed at some point and improved perfomance wise
-      elsif params[:commit] == "Save and Execute Next"
+      elsif permitted_params[:commit] == "Save and Execute Next"
         # Get a list of results
         results = Result.where(:assignment_id => @result.assignment_id).order('id')
       
@@ -235,9 +235,9 @@ class ResultsController < ApplicationController
       # Due to the method that we validate all fields in this update module
       # These values are not passed on if there is an error
       # We pass them back to the user
-      @result.result = params[:result][:result]
-      @result.note = params[:result][:note]
-      @result.bugs = params[:result][:bugs]
+      @result.result = permitted_params[:result][:result]
+      @result.note = permitted_params[:result][:note]
+      @result.bugs = permitted_params[:result][:bugs]
       flash[:warn] = "There was an error saving the result. See below for more details."
       render :action => "edit"
     end
@@ -248,7 +248,7 @@ class ResultsController < ApplicationController
   # DELETE /results/1.xml
   def destroy
     authorize! :destroy, Result
-    @result = Result.find(params[:id])
+    @result = Result.find(permitted_params[:id])
     
     # For results, we verify that the actual assignment product is visible
     # Verify user can view items for this product. Must be in his product
@@ -264,7 +264,7 @@ class ResultsController < ApplicationController
   # GET /results/:id/comare
   def compare
     authorize! :read, Result
-    @result = Result.find(params[:id])
+    @result = Result.find(permitted_params[:id])
     
     # For results, we verify that the actual assignment product is visible
     # Verify user can view items for this product. Must be in his product
@@ -329,11 +329,11 @@ class ResultsController < ApplicationController
   # Among other things, these prevent SQL injection
   # Set asc and name as default values
   def sort_column
-    # Assignment.column_names.include?(params[:sort]) ? params[:sort] : "products_id"
-    %w[id products.name versions.version test_plans.name stencils.name].include?(params[:sort]) ? params[:sort] : "products.name"
+    # Assignment.column_names.include?(permitted_params[:sort]) ? permitted_params[:sort] : "products_id"
+    %w[id products.name versions.version test_plans.name stencils.name].include?(permitted_params[:sort]) ? permitted_params[:sort] : "products.name"
   end
   
   def sort_direction
-    %w[asc desc].include?(params[:direction]) ? params[:direction] : "asc"
+    %w[asc desc].include?(permitted_params[:direction]) ? permitted_params[:direction] : "asc"
   end
 end

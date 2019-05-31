@@ -1,4 +1,4 @@
-class CreateTestPlans < ActiveRecord::Migration
+class CreateTestPlans < ActiveRecord::Migration[4.2]
   def self.up
     create_table :test_plans do |t|
       t.string :name

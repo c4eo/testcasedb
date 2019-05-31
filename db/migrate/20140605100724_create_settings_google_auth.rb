@@ -1,8 +1,8 @@
-class CreateSettingsGoogleAuth < ActiveRecord::Migration
+class CreateSettingsGoogleAuth < ActiveRecord::Migration[4.2]
   def up
-    Setting.find_or_create_by_name(:name => 'Google Auth enabled', :value => 'Disabled', :description => 'Enable Google Auth.')
-    Setting.find_or_create_by_name(:name => 'Google Auth Client ID', :value => 'none')
-    Setting.find_or_create_by_name(:name => 'Google Auth Secret', :value => 'none', :description => 'Google Auth Secret')
+    Setting.find_or_create_by(:name => 'Google Auth enabled', :value => 'Disabled', :description => 'Enable Google Auth.')
+    Setting.find_or_create_by(:name => 'Google Auth Client ID', :value => 'none')
+    Setting.find_or_create_by(:name => 'Google Auth Secret', :value => 'none', :description => 'Google Auth Secret')
   end
 
   def down

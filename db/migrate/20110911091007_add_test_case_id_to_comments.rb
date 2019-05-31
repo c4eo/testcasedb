@@ -1,4 +1,4 @@
-class AddTestCaseIdToComments < ActiveRecord::Migration
+class AddTestCaseIdToComments < ActiveRecord::Migration[4.2]
   def self.up
     add_column :comments, :test_plan_id, :integer
   end

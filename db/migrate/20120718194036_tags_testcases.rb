@@ -1,4 +1,4 @@
-class TagsTestcases < ActiveRecord::Migration
+class TagsTestcases < ActiveRecord::Migration[4.2]
   def self.up
     create_table :tag_test_cases, :id => false do |t|
       t.integer :tag_id

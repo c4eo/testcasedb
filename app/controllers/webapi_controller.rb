@@ -10,7 +10,7 @@ class WebapiController < ApplicationController
     # Make a hash of the xml parameters
     xml_params = Hash.from_xml(request.body.read)
 
-    # Check that the generic required params are included in request
+    # Check that the generic required permitted_params are included in request
     # If details are returned, it means there was an error
     @details = check_xml_params( xml_params )
     
@@ -50,7 +50,7 @@ class WebapiController < ApplicationController
   private
   
   # Takes the xml param hash as argument
-  # verifies required items included in the params hash
+  # verifies required items included in the permitted_params hash
   # returns error if required items are missing 
   def check_xml_params(xml_params)
     details = nil

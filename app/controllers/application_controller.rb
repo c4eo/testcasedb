@@ -17,8 +17,8 @@ class ApplicationController < ActionController::Base
   # For all pages, require that the user be logged in
   # Note that this filter is ignored in the user_session and authentication controller
   # As it would break login
-  before_filter :require_login
-  before_filter :set_user_time_zone
+  before_action :require_login
+  before_action :set_user_time_zone
   
   helper_method :current_user
   # For solution for default_url_options
@@ -49,7 +49,7 @@ class ApplicationController < ActionController::Base
   # This is used for searches on index pages with a product.
   # Ex. see assignments and and results (execute) index page
   def update_version_select        
-    versions = Version.where(:product_id => params[:id]).order(:version) unless params[:id].blank?
+    versions = Version.where(:product_id => permitted_params[:id]).order(:version) unless permitted_params[:id].blank?
     render :partial => "versions", :locals => { :versions => versions }
   end
   
@@ -62,6 +62,10 @@ class ApplicationController < ActionController::Base
       redirect_to login_path(:referer => request.fullpath)
       return false
     end
+  end
+
+  def  permitted_params
+    params.permit!
   end
 
   # Authorize product raises an exception if user tries to a access a product that they do not have access to

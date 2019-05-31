@@ -1,4 +1,4 @@
-class CreateScheduleRuns < ActiveRecord::Migration
+class CreateScheduleRuns < ActiveRecord::Migration[4.2]
   def self.up
     create_table :schedule_runs do |t|
       t.integer :device_id

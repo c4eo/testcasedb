@@ -1,4 +1,4 @@
-class AddStepTestCaseJoinTable < ActiveRecord::Migration
+class AddStepTestCaseJoinTable < ActiveRecord::Migration[4.2]
   def self.up
     create_table :steps_test_cases, :id => false do |t|
       t.integer :step_id

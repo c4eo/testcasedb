@@ -1,4 +1,4 @@
-class AddUserLastRequestAt < ActiveRecord::Migration
+class AddUserLastRequestAt < ActiveRecord::Migration[4.2]
   def self.up
     add_column :users, :last_request_at, :datetime
   end

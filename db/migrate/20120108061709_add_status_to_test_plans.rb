@@ -1,4 +1,4 @@
-class AddStatusToTestPlans < ActiveRecord::Migration
+class AddStatusToTestPlans < ActiveRecord::Migration[4.2]
   def self.up
     add_column :test_plans, :status, :integer, :limit => 2
   end

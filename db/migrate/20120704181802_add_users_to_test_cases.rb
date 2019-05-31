@@ -1,4 +1,4 @@
-class AddUsersToTestCases < ActiveRecord::Migration
+class AddUsersToTestCases < ActiveRecord::Migration[4.2]
   def self.up
     add_column :test_cases, :created_by_id, :integer
     add_column :test_cases, :modified_by_id, :integer

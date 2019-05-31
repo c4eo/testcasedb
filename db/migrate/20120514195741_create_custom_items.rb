@@ -1,4 +1,4 @@
-class CreateCustomItems < ActiveRecord::Migration
+class CreateCustomItems < ActiveRecord::Migration[4.2]
   def self.up
     create_table :custom_items do |t|
       t.integer :test_case_id

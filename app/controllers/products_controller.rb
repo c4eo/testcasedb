@@ -18,7 +18,7 @@ class ProductsController < ApplicationController
   # GET /products/1
   # GET /products/1.xml
   def show
-    @product = Product.find(params[:id])
+    @product = Product.find(permitted_params[:id])
     authorize! :read, @product
     authorize_product!(@product)
     
@@ -40,7 +40,7 @@ class ProductsController < ApplicationController
 
   # GET /products/1/edit
   def edit
-    @product = Product.find(params[:id])
+    @product = Product.find(permitted_params[:id])
     authorize_product!(@product)
     
     authorize! :update, @product
@@ -49,7 +49,7 @@ class ProductsController < ApplicationController
   # POST /products
   # POST /products.xml
   def create
-    @product = Product.new(params[:product])
+    @product = Product.new(permitted_params[:product])
     authorize! :create, @product
 
     respond_to do |format|
@@ -60,7 +60,7 @@ class ProductsController < ApplicationController
         History.create(:product_id => @product.id, :action => 1, :user_id => current_user.id)
         
         # If it is save and new
-        if params[:commit] == "Save and Create Additional"
+        if permitted_params[:commit] == "Save and Create Additional"
           format.html { redirect_to( new_product_path, :notice => 'Product was successfully created. Please create another.') }
          # If it is just save, show the new user
         else
@@ -76,12 +76,12 @@ class ProductsController < ApplicationController
   # PUT /products/1
   # PUT /products/1.xml
   def update
-    @product = Product.find(params[:id])
+    @product = Product.find(permitted_params[:id])
     authorize! :update, @product
     authorize_product!(@product)
     
     respond_to do |format|
-      if @product.update_attributes(params[:product])
+      if @product.update_attributes(permitted_params[:product])
         # Create item in log history
         # Action type based on value from en.yaml
         History.create(:product_id => @product.id, :action => 2, :user_id => current_user.id)
@@ -96,7 +96,7 @@ class ProductsController < ApplicationController
   # DELETE /products/1
   # DELETE /products/1.xml
   def destroy
-    @product = Product.find(params[:id])
+    @product = Product.find(permitted_params[:id])
     authorize! :destroy, @product
     authorize_product!(@product)
     

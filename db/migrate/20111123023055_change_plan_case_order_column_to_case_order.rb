@@ -1,4 +1,4 @@
-class ChangePlanCaseOrderColumnToCaseOrder < ActiveRecord::Migration
+class ChangePlanCaseOrderColumnToCaseOrder < ActiveRecord::Migration[4.2]
   def self.up
     rename_column :plan_cases, :order, :case_order
   end

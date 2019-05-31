@@ -1,4 +1,14 @@
 module TestCasesHelper
+  def button_to_function(name, function=nil, html_options={})
+    message = "button_to_function is deprecated and will be removed from Rails 4.1. We recommend using Unobtrusive JavaScript instead. " +
+      "See http://guides.rubyonrails.org/working_with_javascript_in_rails.html#unobtrusive-javascript"
+    ActiveSupport::Deprecation.warn message
+
+    onclick = "#{"#{html_options[:onclick]}; " if html_options[:onclick]}#{function};"
+
+    tag(:input, html_options.merge(:type => 'button', :value => name, :onclick => onclick))
+  end
+  
   # Used to delete fields on accepts_nested_Attributes (ex. test case steps)
   # function courtesy of railcasts #197
   def link_to_remove_steps(name, f)
@@ -41,7 +51,7 @@ module TestCasesHelper
   end
   
   def test_type_list
-    TestType.find(:all).collect {|d| [ d.name, d.id ]}
+    TestType.all.collect {|d| [ d.name, d.id ]}
   end
   
   # Takes a test case and figures out if it is the parent

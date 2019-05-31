@@ -7,7 +7,7 @@ class StencilsController < ApplicationController
   def index
     authorize! :read, Stencil
     
-    @stencils = Stencil.includes(:product).where(:product_id => current_user.products).order(sort_column + " " + sort_direction).page(params[:page]).per(20)
+    @stencils = Stencil.includes(:product).where(:product_id => current_user.products).order(sort_column + " " + sort_direction).page(permitted_params[:page]).per(20)
 
     respond_to do |format|
       format.html # index.html.erb
@@ -17,7 +17,7 @@ class StencilsController < ApplicationController
   # GET /stencils/1
   # GET /stencils/1.xml
   def show
-    @stencil = Stencil.find(params[:id])
+    @stencil = Stencil.find(permitted_params[:id])
     authorize! :read, Stencil
     
     # Verify user can view this stencil. Must be in his product
@@ -49,7 +49,7 @@ class StencilsController < ApplicationController
 
   # GET /stencils/1/edit
   def edit
-    @stencil = Stencil.find(params[:id])
+    @stencil = Stencil.find(permitted_params[:id])
     authorize! :update, Stencil
     
     if (Setting.value('Allow Test Plan Edit After Assignment') == true) or (Assignment.where(:stencil_id => @stencil.id).count < 1)
@@ -65,7 +65,7 @@ class StencilsController < ApplicationController
   # POST /stencils
   # POST /stencils.xml
   def create
-    @stencil = Stencil.new(params[:stencil])
+    @stencil = Stencil.new(permitted_params[:stencil])
     authorize! :create, Stencil
     
     # Verify user can view this test plan. Must be in his product
@@ -83,7 +83,7 @@ class StencilsController < ApplicationController
         
         # Redirect based on button. IF they clicked SAve and Add Test cases, go to edit view
         # Otherwise, load show page
-        if params[:commit] == "Save and Add Test Plans"
+        if permitted_params[:commit] == "Save and Add Test Plans"
           format.html { redirect_to(edit_stencil_path(@stencil), :notice => 'Stencil was successfully created. Please add test plans.') }
         else
           format.html { redirect_to(@stencil, :notice => 'Stencil was successfully created.') }
@@ -98,7 +98,7 @@ class StencilsController < ApplicationController
   # PUT /stencils/1
   # PUT /stencils/1.xml
   def update
-    @stencil = Stencil.find(params[:id])
+    @stencil = Stencil.find(permitted_params[:id])
     authorize! :update, Stencil
     
     # Verify user can view this test plan. Must be in his product
@@ -107,7 +107,7 @@ class StencilsController < ApplicationController
     @stencil.modified_by = current_user
     
     respond_to do |format|
-      if @stencil.update_attributes(params[:stencil])
+      if @stencil.update_attributes(permitted_params[:stencil])
         # Create item in log history
         # Action type based on value from en.yaml
         History.create(:stencil_id => @stencil.id, :action => 2, :user_id => current_user.id)
@@ -124,7 +124,7 @@ class StencilsController < ApplicationController
   # DELETE /stencils/1
   # DELETE /stencils/1.xml
   def destroy
-    @stencil = Stencil.find(params[:id])
+    @stencil = Stencil.find(permitted_params[:id])
     authorize! :destroy, Stencil
     
     # Verify user can view this test plan. Must be in his product
@@ -148,7 +148,7 @@ class StencilsController < ApplicationController
   # get /stencils/create_new_version/:id
   def create_new_version
     begin 
-      original_stencil = Stencil.find( params[:id] )
+      original_stencil = Stencil.find( permitted_params[:id] )
       
       # Verify user can view this test plan. Must be in his product
       authorize_product!(original_stencil.product)
@@ -191,9 +191,9 @@ class StencilsController < ApplicationController
   # Then render the drop downs
   def update_test_plan_select 
     # Verify user can view items for this product. Must be in his product
-    authorize_product!( Product.find(params[:id]) )
+    authorize_product!( Product.find(permitted_params[:id]) )
 
-    test_plans = TestPlan.where(:product_id => params[:id]).order(:name) unless params[:id].blank?
+    test_plans = TestPlan.where(:product_id => permitted_params[:id]).order(:name) unless permitted_params[:id].blank?
     render :partial => "test_plans", :locals => { :test_plans => test_plans }
   end
   
@@ -203,11 +203,11 @@ class StencilsController < ApplicationController
   # Among other things, these prevent SQL injection
   # Set asc and name as default values
   def sort_column
-    # Stencil.column_names.include?(params[:sort]) ? params[:sort] : "id"
-    %w[id products.name name version].include?(params[:sort]) ? params[:sort] : "id"
+    # Stencil.column_names.include?(permitted_params[:sort]) ? permitted_params[:sort] : "id"
+    %w[id products.name name version].include?(permitted_params[:sort]) ? permitted_params[:sort] : "id"
   end
   
   def sort_direction
-    %w[asc desc].include?(params[:direction]) ? params[:direction] : "asc"
+    %w[asc desc].include?(permitted_params[:direction]) ? permitted_params[:direction] : "asc"
   end
 end

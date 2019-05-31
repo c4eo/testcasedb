@@ -1,4 +1,4 @@
-class ChangeUploadsToAPolymorphicRelationship < ActiveRecord::Migration
+class ChangeUploadsToAPolymorphicRelationship < ActiveRecord::Migration[4.2]
   def up
     change_table :uploads do |t|
         t.references :uploadable, :polymorphic => true

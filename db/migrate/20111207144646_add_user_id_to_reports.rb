@@ -1,4 +1,4 @@
-class AddUserIdToReports < ActiveRecord::Migration
+class AddUserIdToReports < ActiveRecord::Migration[4.2]
   def self.up
     add_column :reports, :user_id, :integer
   end

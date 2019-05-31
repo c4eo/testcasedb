@@ -1,9 +1,9 @@
 class UserSessionsController < ApplicationController
   # Ignore the require login filter or we get stuck in 
   # a redirect loop to this page  
-  skip_before_filter :require_login
-  skip_before_filter :set_user_time_zone
-  before_filter :google_auth_enabled
+  skip_before_action :require_login
+  skip_before_action :set_user_time_zone
+  before_action :google_auth_enabled
   
   def new
     @user_session = UserSession.new
@@ -11,11 +11,10 @@ class UserSessionsController < ApplicationController
   end
 
   def create
-    @user_session = UserSession.new(params[:user_session])
-        
+    @user_session = UserSession.new(permitted_params[:user_session].permit!.to_h)
     if @user_session.save
-      if params[:user_session][:referer]
-        redirect_to params[:user_session][:referer], :notice => "Successfully logged in."
+      if permitted_params[:user_session][:referer]
+        redirect_to permitted_params[:user_session][:referer], :notice => "Successfully logged in."
       else  
         redirect_to home_path, :notice => "Successfully logged in."
       end

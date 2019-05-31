@@ -3,27 +3,27 @@ require "webapi/webapi_spec_helper"
 RSpec.describe 'Results API', :type => :request do
   
   before(:each) do
-    @product = Product.create(FactoryGirl.attributes_for(:product))
-    @category = Category.create(FactoryGirl.attributes_for(:category))
-    @sub_category = Category.create(FactoryGirl.attributes_for(:sub_category))
-    @version = Version.create(FactoryGirl.attributes_for(:version))      
-    @test_case = TestCase.create(FactoryGirl.attributes_for(:test_case))
-    @test_case_2 = TestCase.create(FactoryGirl.attributes_for(:test_case_2))       
-    @test_plan = TestPlan.create(FactoryGirl.attributes_for(:test_plan))
-    @test_plan_2 = TestPlan.create(FactoryGirl.attributes_for(:test_plan_2))
-    @plan_case = PlanCase.create(FactoryGirl.attributes_for(:plan_case))
-    @plan_case_2 = PlanCase.create(FactoryGirl.attributes_for(:plan_case_2))
-    @plan_case_3 = PlanCase.create(FactoryGirl.attributes_for(:plan_case_3))     
-    @device = Device.create(FactoryGirl.attributes_for(:device))
-    @device_2 = Device.create(FactoryGirl.attributes_for(:device_2))
-    @stencil_attr_hash = FactoryGirl.attributes_for(:stencil)
-    @stencil_test_plan = StencilTestPlan.create(FactoryGirl.attributes_for(:stencil_test_plan))
-    @stencil_test_plan = StencilTestPlan.create(FactoryGirl.attributes_for(:stencil_test_plan_2))
-    @test_plan_assignment = Assignment.create(FactoryGirl.attributes_for(:test_plan_assignment))
-    @stencil_assignment = Assignment.create(FactoryGirl.attributes_for(:stencil_assignment))
-    @result = Result.create(FactoryGirl.attributes_for(:result))
-    @result_2 = Result.create(FactoryGirl.attributes_for(:result_2))
-    @result_3 = Result.create(FactoryGirl.attributes_for(:result_3))
+    @product = Product.create(FactoryBot.attributes_for(:product))
+    @category = Category.create(FactoryBot.attributes_for(:category))
+    @sub_category = Category.create(FactoryBot.attributes_for(:sub_category))
+    @version = Version.create(FactoryBot.attributes_for(:version))      
+    @test_case = TestCase.create(FactoryBot.attributes_for(:test_case))
+    @test_case_2 = TestCase.create(FactoryBot.attributes_for(:test_case_2))       
+    @test_plan = TestPlan.create(FactoryBot.attributes_for(:test_plan))
+    @test_plan_2 = TestPlan.create(FactoryBot.attributes_for(:test_plan_2))
+    @plan_case = PlanCase.create(FactoryBot.attributes_for(:plan_case))
+    @plan_case_2 = PlanCase.create(FactoryBot.attributes_for(:plan_case_2))
+    @plan_case_3 = PlanCase.create(FactoryBot.attributes_for(:plan_case_3))     
+    @device = Device.create(FactoryBot.attributes_for(:device))
+    @device_2 = Device.create(FactoryBot.attributes_for(:device_2))
+    @stencil_attr_hash = FactoryBot.attributes_for(:stencil)
+    @stencil_test_plan = StencilTestPlan.create(FactoryBot.attributes_for(:stencil_test_plan))
+    @stencil_test_plan = StencilTestPlan.create(FactoryBot.attributes_for(:stencil_test_plan_2))
+    @test_plan_assignment = Assignment.create(FactoryBot.attributes_for(:test_plan_assignment))
+    @stencil_assignment = Assignment.create(FactoryBot.attributes_for(:stencil_assignment))
+    @result = Result.create(FactoryBot.attributes_for(:result))
+    @result_2 = Result.create(FactoryBot.attributes_for(:result_2))
+    @result_3 = Result.create(FactoryBot.attributes_for(:result_3))
   end  
    
   it "get not found" do
@@ -35,7 +35,7 @@ RSpec.describe 'Results API', :type => :request do
       "Accept" => "application/json",
       "Content-Type" => "application/json"
     }
-    post "api/results/get.json", params, request_headers
+    post "/api/results/get.json", params: params, headers: request_headers
     expect(response.status).to eq(200)
     expect(JSON.parse(response.body)['found']).to eq(false) 
   end
@@ -49,7 +49,7 @@ RSpec.describe 'Results API', :type => :request do
       "Accept" => "application/json",
       "Content-Type" => "application/json"
     }
-    post "api/results/get.json", params, request_headers
+    post "/api/results/get.json", params: params, headers: request_headers
     expect(response.status).to eq(200)       
     expect(JSON.parse(response.body)['found']).to eq(true)
     expect(JSON.parse(response.body)['results'].count).to eq(1)
@@ -65,7 +65,7 @@ RSpec.describe 'Results API', :type => :request do
       "Accept" => "application/json",
       "Content-Type" => "application/json"
     }
-    post "api/results/get.json", params, request_headers
+    post "/api/results/get.json", params: params, headers: request_headers
     expect(response.status).to eq(200)    
     expect(JSON.parse(response.body)['results'].count).to eq(2)
     expect(JSON.parse(response.body)['results'][0]['test_case_id']).to eq(11)
@@ -81,7 +81,7 @@ RSpec.describe 'Results API', :type => :request do
       "Accept" => "application/json",
       "Content-Type" => "application/json"
     }
-    post "api/results/get.json", params, request_headers
+    post "/api/results/get.json", params: params, headers: request_headers
     expect(response.status).to eq(200)    
     expect(JSON.parse(response.body)['results'].count).to eq(2)
     expect(JSON.parse(response.body)['results'][0]['assignment_id']).to eq(12)
@@ -99,7 +99,7 @@ RSpec.describe 'Results API', :type => :request do
       "Accept" => "application/json",
       "Content-Type" => "application/json"
     }
-    post "api/results/get.json", params, request_headers
+    post "/api/results/get.json", params: params, headers: request_headers
     expect(response.status).to eq(200)    
     expect(JSON.parse(response.body)['results'].count).to eq(3)
   end
@@ -112,7 +112,7 @@ RSpec.describe 'Results API', :type => :request do
       "Accept" => "application/json",
       "Content-Type" => "application/json"
     }
-    post "api/results/set.json", params, request_headers
+    post "/api/results/set.json", params: params, headers: request_headers
     expect(response.status).to eq(400)
   end 
   
@@ -125,7 +125,7 @@ RSpec.describe 'Results API', :type => :request do
       "Accept" => "application/json",
       "Content-Type" => "application/json"
     }
-    post "api/results/set.json", params, request_headers
+    post "/api/results/set.json", params: params, headers: request_headers
     expect(response.status).to eq(400)
     params = {
       "api_key" => @user.single_access_token,
@@ -135,7 +135,7 @@ RSpec.describe 'Results API', :type => :request do
       "Accept" => "application/json",
       "Content-Type" => "application/json"
     }
-    post "api/results/set.json", params, request_headers
+    post "/api/results/set.json", params: params, headers: request_headers
     expect(response.status).to eq(400)
     params = {
       "api_key" => @user.single_access_token,
@@ -145,7 +145,7 @@ RSpec.describe 'Results API', :type => :request do
       "Accept" => "application/json",
       "Content-Type" => "application/json"
     }
-    post "api/results/set.json", params, request_headers
+    post "/api/results/set.json", params: params, headers: request_headers
     expect(response.status).to eq(400) 
     params = {
       "api_key" => @user.single_access_token,
@@ -155,7 +155,7 @@ RSpec.describe 'Results API', :type => :request do
       "Accept" => "application/json",
       "Content-Type" => "application/json"
     }
-    post "api/results/set.json", params, request_headers
+    post "/api/results/set.json", params: params, headers: request_headers
     expect(response.status).to eq(400)               
   end
 
@@ -168,7 +168,7 @@ RSpec.describe 'Results API', :type => :request do
       "Accept" => "application/json",
       "Content-Type" => "application/json"
     }
-    post "api/results/set.json", params, request_headers
+    post "/api/results/set.json", params: params, headers: request_headers
     expect(response.status).to eq(400)
   end  
   
@@ -182,7 +182,7 @@ RSpec.describe 'Results API', :type => :request do
       "Accept" => "application/json",
       "Content-Type" => "application/json"
     }
-    post "api/results/set.json", params, request_headers    
+    post "/api/results/set.json", params: params, headers: request_headers    
     expect(response.status).to eq(200)
     expect(JSON.parse(response.body)['results'].count).to eq(2)
   end 
@@ -209,7 +209,7 @@ RSpec.describe 'Results API', :type => :request do
       "Accept" => "application/json",
       "Content-Type" => "application/json"
     }
-    post "api/results/set.json", params, request_headers
+    post "/api/results/set.json", params: params, headers: request_headers
     expect(response.status).to eq(200)
     expect(JSON.parse(response.body)['results'].count).to eq(2)
     # get and verify
@@ -221,7 +221,7 @@ RSpec.describe 'Results API', :type => :request do
       "Accept" => "application/json",
       "Content-Type" => "application/json"
     }
-    post "api/results/get.json", params, request_headers
+    post "/api/results/get.json", params: params, headers: request_headers
     expect(response.status).to eq(200)
     expect(JSON.parse(response.body)['found']).to eq(true)
     expect(JSON.parse(response.body)['results'].count).to eq(2)
@@ -245,7 +245,7 @@ RSpec.describe 'Results API', :type => :request do
       "Accept" => "application/json",
       "Content-Type" => "application/json"
     }
-    post "api/results/set.json", params, request_headers    
+    post "/api/results/set.json", params: params, headers: request_headers    
     expect(response.status).to eq(200)
     expect(JSON.parse(response.body)['results'].count).to eq(2)
   end    

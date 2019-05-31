@@ -1,4 +1,4 @@
-class CreateTestTypes < ActiveRecord::Migration
+class CreateTestTypes < ActiveRecord::Migration[4.2]
   def self.up
     create_table :test_types do |t|
       t.string :name

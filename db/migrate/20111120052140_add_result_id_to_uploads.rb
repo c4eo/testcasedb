@@ -1,4 +1,4 @@
-class AddResultIdToUploads < ActiveRecord::Migration
+class AddResultIdToUploads < ActiveRecord::Migration[4.2]
   def self.up
     add_column :uploads, :result_id, :integer
   end

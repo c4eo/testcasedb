@@ -1,4 +1,4 @@
-class RemoveOldIdFieldsFromUploads < ActiveRecord::Migration
+class RemoveOldIdFieldsFromUploads < ActiveRecord::Migration[4.2]
   def up
     change_table :uploads do |t|
         t.remove_references :test_case

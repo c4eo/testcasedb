@@ -29,7 +29,7 @@ class SchedulesController < ApplicationController
   # GET /schedules/1
   # GET /schedules/1.xml
   def show
-    @schedule = Schedule.find(params[:id])
+    @schedule = Schedule.find(permitted_params[:id])
     @schedule.start_time = convert_to_local_time(@schedule.start_time)
     authorize! :read, @schedule
     
@@ -54,7 +54,7 @@ class SchedulesController < ApplicationController
 
   # GET /schedules/1/edit
   def edit
-    @schedule = Schedule.find(params[:id])
+    @schedule = Schedule.find(permitted_params[:id])
     @schedule.start_time = convert_to_local_time(@schedule.start_time)
     authorize! :update, @schedule
     
@@ -66,7 +66,7 @@ class SchedulesController < ApplicationController
   # POST /schedules
   # POST /schedules.xml
   def create
-    @schedule = Schedule.new(params[:schedule])
+    @schedule = Schedule.new(permitted_params[:schedule])
     authorize! :create, @schedule
     
     # Verify user can view this schedule. Must be in his product
@@ -86,16 +86,16 @@ class SchedulesController < ApplicationController
   # PUT /schedules/1
   # PUT /schedules/1.xml
   def update
-    @schedule = Schedule.find(params[:id])
+    @schedule = Schedule.find(permitted_params[:id])
     authorize! :update, @schedule
 
     # Verify user can view this schedule. Must be in his product
     authorize_product!(@schedule.product)
     # Verify that if they change the product, it is changed to a product they have access to.
-    authorize_product!(Product.find(params[:schedule][:product_id]))
+    authorize_product!(Product.find(permitted_params[:schedule][:product_id]))
     
     respond_to do |format|
-      if @schedule.update_attributes(params[:schedule])
+      if @schedule.update_attributes(permitted_params[:schedule])
         @schedule.start_time = convert_to_utc_time(@schedule.start_time)
         @schedule.save
         format.html { redirect_to(@schedule, :notice => 'Schedule was successfully updated.') }
@@ -108,7 +108,7 @@ class SchedulesController < ApplicationController
   # DELETE /schedules/1
   # DELETE /schedules/1.xml
   def destroy
-    @schedule = Schedule.find(params[:id])
+    @schedule = Schedule.find(permitted_params[:id])
     authorize! :destroy, @schedule
     
     # Verify user can view this schedule. Must be in his product
@@ -125,10 +125,10 @@ class SchedulesController < ApplicationController
   # Get the test plans for the current product
   # Then render the test plan drop down partial
   def update_test_plan_select        
-    test_plans = TestPlan.where(:product_id => params[:id]).order(:name) unless params[:id].blank?
+    test_plans = TestPlan.where(:product_id => permitted_params[:id]).order(:name) unless permitted_params[:id].blank?
 
     # Verify user can view this schedule. Must be in his product
-    authorize_product!(Product.find(params[:id]))
+    authorize_product!(Product.find(permitted_params[:id]))
     
     render :partial => "test_plans", :locals => { :test_plans => test_plans }
   end
@@ -149,11 +149,11 @@ class SchedulesController < ApplicationController
   # Among other things, these prevent SQL injection
   # Set asc and name as default values
   def sort_column
-    # Schedule.column_names.include?(params[:sort]) ? params[:sort] : "device_id"
-    %w[devices.name products.name test_plans.name start_time].include?(params[:sort]) ? params[:sort] : "devices.name"
+    # Schedule.column_names.include?(permitted_params[:sort]) ? permitted_params[:sort] : "device_id"
+    %w[devices.name products.name test_plans.name start_time].include?(permitted_params[:sort]) ? permitted_params[:sort] : "devices.name"
   end
   
   def sort_direction
-    %w[asc desc].include?(params[:direction]) ? params[:direction] : "asc"
+    %w[asc desc].include?(permitted_params[:direction]) ? permitted_params[:direction] : "asc"
   end
 end

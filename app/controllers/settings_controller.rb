@@ -29,7 +29,7 @@ class SettingsController < ApplicationController
 
   def edit
     authorize! :update, Setting
-    @setting = Setting.find(params[:id])
+    @setting = Setting.find(permitted_params[:id])
     
     if @setting.name == 'SystemID'
       redirect_to settings_url, :flash => { :warning => "Invalid Entry" }
@@ -40,10 +40,10 @@ class SettingsController < ApplicationController
 
   def update
     authorize! :update, Setting
-    @setting = Setting.find(params[:id])
+    @setting = Setting.find(permitted_params[:id])
     
     Rails.logger.info "Updating setting - " + @setting.name
-    if @setting.update_attributes(params[:setting])
+    if @setting.update_attributes(permitted_params[:setting])
       Rails.logger.info "Setting, " + @setting.name + ", saved."
       redirect_to settings_url, :notice  => "Successfully updated setting."
     else

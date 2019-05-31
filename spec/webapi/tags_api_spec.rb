@@ -3,7 +3,7 @@ require "webapi/webapi_spec_helper"
 RSpec.describe 'Tags API', :type => :request do
   
   before(:each) do
-    @tag_attr_hash = FactoryGirl.attributes_for(:tag)  
+    @tag_attr_hash = FactoryBot.attributes_for(:tag)  
   end  
    
   it "search not found" do
@@ -15,7 +15,7 @@ RSpec.describe 'Tags API', :type => :request do
       "Accept" => "application/json",
       "Content-Type" => "application/json"
     }
-    post "api/tags/search.json", params, request_headers
+    post "/api/tags/search.json", params: params, headers: request_headers
     expect(JSON.parse(response.body)['found']).to eq(false)
     expect(response.status).to eq(200) 
   end
@@ -30,7 +30,7 @@ RSpec.describe 'Tags API', :type => :request do
       "Accept" => "application/json",
       "Content-Type" => "application/json"
     }
-    post "api/tags/search.json", params, request_headers
+    post "/api/tags/search.json", params: params, headers: request_headers
     expect(JSON.parse(response.body)['found']).to eq(true)
     expect(response.status).to eq(200) 
   end  
@@ -45,7 +45,7 @@ RSpec.describe 'Tags API', :type => :request do
       "Accept" => "application/json",
       "Content-Type" => "application/json"
     }
-    post "api/tags/create.json", params, request_headers
+    post "/api/tags/create.json", params: params, headers: request_headers
     expect(JSON.parse(response.body)['name']).to eq(name)    
     expect(response.status).to eq(201) 
   end   

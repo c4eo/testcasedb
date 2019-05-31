@@ -1,5 +1,4 @@
 class Schedule < ActiveRecord::Base
-  attr_accessible :device_id, :product_id, :test_plan_id, :monday, :tuesday, :wednesday, :thursday, :friday, :saturday, :sunday, :start_time, :user_ids
   belongs_to :product
   belongs_to :test_plan
   belongs_to :device

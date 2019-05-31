@@ -14,7 +14,7 @@ class TagsController < ApplicationController
   # GET /tags/1
   # GET /tags/1.xml
   def show
-    @tag = Tag.find(params[:id])
+    @tag = Tag.find(permitted_params[:id])
     authorize! :read, @tag
     
     respond_to do |format|
@@ -37,20 +37,20 @@ class TagsController < ApplicationController
 
   # GET /tags/1/edit
   def edit
-    @tag = Tag.find(params[:id])
+    @tag = Tag.find(permitted_params[:id])
     authorize! :update, @tag
   end
 
   # POST /tags
   # POST /tags.xml
   def create
-    @tag = Tag.new(params[:tag])
+    @tag = Tag.new(permitted_params[:tag])
     authorize! :create, @tag
 
     respond_to do |format|
       if @tag.save
         # If this is save and create additional
-        if params[:commit] == "Save and Create Additional"
+        if permitted_params[:commit] == "Save and Create Additional"
           format.html { redirect_to(new_tag_path, :notice => 'Tag successfully created. Please create another tag.') }
         # Else, just load the show page
         else 
@@ -65,11 +65,11 @@ class TagsController < ApplicationController
   # PUT /tags/1
   # PUT /tags/1.xml
   def update
-    @tag = Tag.find(params[:id])
+    @tag = Tag.find(permitted_params[:id])
     authorize! :update, @tag
 
     respond_to do |format|
-      if @tag.update_attributes(params[:tag])
+      if @tag.update_attributes(permitted_params[:tag])
         format.html { redirect_to(@tag, :notice => 'Tag was successfully updated.') }
         format.xml  { head :ok }
       else
@@ -82,7 +82,7 @@ class TagsController < ApplicationController
   # DELETE /tags/1
   # DELETE /tags/1.xml
   def destroy
-    @tag = Tag.find(params[:id])
+    @tag = Tag.find(permitted_params[:id])
     authorize! :destroy, @tag
     @tag.destroy
 

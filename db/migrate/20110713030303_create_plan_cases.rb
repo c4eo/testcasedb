@@ -1,4 +1,4 @@
-class CreatePlanCases < ActiveRecord::Migration
+class CreatePlanCases < ActiveRecord::Migration[4.2]
   def self.up
     create_table :plan_cases do |t|
       t.integer :test_case_id

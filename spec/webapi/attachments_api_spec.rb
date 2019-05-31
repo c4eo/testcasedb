@@ -1,24 +1,24 @@
 require "webapi/webapi_spec_helper"
 
-def verify_attachment(factory_girl_object, attachment, file_path)  
-  expect(attachment['id']).to eq(factory_girl_object.id)
-  expect(attachment['description']).to eq(factory_girl_object.description)
-  expect(attachment['parent_id']).to eq(factory_girl_object.uploadable_id)
-  expect(attachment['parent_type']).to eq(factory_girl_object.uploadable_type)
-  expect(attachment['file_name']).to eq(factory_girl_object.upload_file_name)
-  expect(attachment['content_type']).to eq(factory_girl_object.upload_content_type)
-  expect(attachment['size']).to eq(factory_girl_object.upload_file_size)
+def verify_attachment(factory_bot_object, attachment, file_path)  
+  expect(attachment['id']).to eq(factory_bot_object.id)
+  expect(attachment['description']).to eq(factory_bot_object.description)
+  expect(attachment['parent_id']).to eq(factory_bot_object.uploadable_id)
+  expect(attachment['parent_type']).to eq(factory_bot_object.uploadable_type)
+  expect(attachment['file_name']).to eq(factory_bot_object.upload_file_name)
+  expect(attachment['content_type']).to eq(factory_bot_object.upload_content_type)
+  expect(attachment['size']).to eq(factory_bot_object.upload_file_size)
   expect(attachment['size']).to eq(File.size(file_path))
 end
 
 RSpec.describe 'Attachments API', :type => :request do
   
   before(:each) do
-    @result = Result.create(FactoryGirl.attributes_for(:result))
-    @upload_attr_hash_png = FactoryGirl.attributes_for(:upload_png)
-    @upload_attr_hash_jpg = FactoryGirl.attributes_for(:upload_jpg)
-    @upload_attr_hash_bmp = FactoryGirl.attributes_for(:upload_bmp)
-    @upload_attr_hash_gif = FactoryGirl.attributes_for(:upload_gif)     
+    @result = Result.create(FactoryBot.attributes_for(:result))
+    @upload_attr_hash_png = FactoryBot.attributes_for(:upload_png)
+    @upload_attr_hash_jpg = FactoryBot.attributes_for(:upload_jpg)
+    @upload_attr_hash_bmp = FactoryBot.attributes_for(:upload_bmp)
+    @upload_attr_hash_gif = FactoryBot.attributes_for(:upload_gif)     
   end
    
   it "search not found" do
@@ -30,7 +30,7 @@ RSpec.describe 'Attachments API', :type => :request do
       "Accept" => "application/json",
       "Content-Type" => "application/json"
     }
-    post "api/attachments/search.json", params, request_headers
+    post "/api/attachments/search.json", params: params, headers: request_headers
     expect(response.status).to eq(200)
     expect(JSON.parse(response.body)['found']).to eq(false) 
   end
@@ -45,7 +45,7 @@ RSpec.describe 'Attachments API', :type => :request do
       "Accept" => "application/json",
       "Content-Type" => "application/json"
     }
-    post "api/attachments/search.json", params, request_headers
+    post "/api/attachments/search.json", params: params, headers: request_headers
     expect(response.status).to eq(200)     
     expect(JSON.parse(response.body)['found']).to eq(true)
     expect(JSON.parse(response.body)['attachments'].count).to eq(1)
@@ -63,7 +63,7 @@ RSpec.describe 'Attachments API', :type => :request do
       "Accept" => "application/json",
       "Content-Type" => "application/json"
     }
-    post "api/attachments/search.json", params, request_headers
+    post "/api/attachments/search.json", params: params, headers: request_headers
     expect(response.status).to eq(200)     
     expect(JSON.parse(response.body)['found']).to eq(true)
     expect(JSON.parse(response.body)['attachments'].count).to eq(1)
@@ -81,7 +81,7 @@ RSpec.describe 'Attachments API', :type => :request do
       "Accept" => "application/json",
       "Content-Type" => "application/json"
     }
-    post "api/attachments/search.json", params, request_headers
+    post "/api/attachments/search.json", params: params, headers: request_headers
     expect(response.status).to eq(200)     
     expect(JSON.parse(response.body)['found']).to eq(true)
     expect(JSON.parse(response.body)['attachments'].count).to eq(1)
@@ -99,7 +99,7 @@ RSpec.describe 'Attachments API', :type => :request do
       "Accept" => "application/json",
       "Content-Type" => "application/json"
     }
-    post "api/attachments/search.json", params, request_headers
+    post "/api/attachments/search.json", params: params, headers: request_headers
     expect(response.status).to eq(200)     
     expect(JSON.parse(response.body)['found']).to eq(true)
     expect(JSON.parse(response.body)['attachments'].count).to eq(1)
@@ -117,7 +117,7 @@ RSpec.describe 'Attachments API', :type => :request do
       "Accept" => "application/json",
       "Content-Type" => "application/json"
     }
-    post "api/attachments/search.json", params, request_headers
+    post "/api/attachments/search.json", params: params, headers: request_headers
     expect(response.status).to eq(200)     
     expect(JSON.parse(response.body)['found']).to eq(true)
     expect(JSON.parse(response.body)['attachments'].count).to eq(1)
@@ -135,7 +135,7 @@ RSpec.describe 'Attachments API', :type => :request do
       "Accept" => "application/json",
       "Content-Type" => "application/json"
     }
-    post "api/attachments/search.json", params, request_headers
+    post "/api/attachments/search.json", params: params, headers: request_headers
     expect(response.status).to eq(200)     
     expect(JSON.parse(response.body)['found']).to eq(true)
     expect(JSON.parse(response.body)['attachments'].count).to eq(1)
@@ -156,7 +156,7 @@ RSpec.describe 'Attachments API', :type => :request do
       "Accept" => "application/json",
       "Content-Type" => "application/json"
     }
-    post "api/attachments/search.json", params, request_headers
+    post "/api/attachments/search.json", params: params, headers: request_headers
     expect(response.status).to eq(200)     
     expect(JSON.parse(response.body)['found']).to eq(true)
     expect(JSON.parse(response.body)['attachments'].count).to eq(4)
@@ -179,7 +179,7 @@ RSpec.describe 'Attachments API', :type => :request do
       "Accept" => "application/json",
       "Content-Type" => "application/json"
     }
-    post "api/attachments/download.json", params, request_headers
+    post "/api/attachments/download.json", params: params, headers: request_headers
     expect(response.status).to eq(200)
     expect(JSON.parse(response.body)['found']).to eq(false) 
   end
@@ -194,7 +194,7 @@ RSpec.describe 'Attachments API', :type => :request do
       "Accept" => "application/json",
       "Content-Type" => "application/json"
     }
-    post "api/attachments/download.json", params, request_headers
+    post "/api/attachments/download.json", params: params, headers: request_headers
     expect(response.status).to eq(200)     
     expect(JSON.parse(response.body)['found']).to eq(true)
     expect(JSON.parse(response.body)['attachments'].count).to eq(1)
@@ -215,7 +215,7 @@ RSpec.describe 'Attachments API', :type => :request do
       "Accept" => "application/json",
       "Content-Type" => "application/json"
     }
-    post "api/attachments/download.json", params, request_headers
+    post "/api/attachments/download.json", params: params, headers: request_headers
     expect(response.status).to eq(200)     
     expect(JSON.parse(response.body)['found']).to eq(true)
     expect(JSON.parse(response.body)['attachments'].count).to eq(4)
@@ -247,7 +247,7 @@ RSpec.describe 'Attachments API', :type => :request do
       "Accept" => "application/json",
       "Content-Type" => "application/json"
     }
-    post "api/attachments/upload.json", params, request_headers
+    post "/api/attachments/upload.json", params: params, headers: request_headers
     expect(response.status).to eq(201)
     expect(JSON.parse(response.body)['id']).to eq(1)
     expect(JSON.parse(response.body)['description']).to eq(description)
@@ -276,7 +276,7 @@ RSpec.describe 'Attachments API', :type => :request do
       "Accept" => "application/json",
       "Content-Type" => "application/json"
     }
-    post "api/attachments/upload.json", params, request_headers
+    post "/api/attachments/upload.json", params: params, headers: request_headers
     expect(response.status).to eq(201)    
     expect(JSON.parse(response.body)['id']).to eq(1)
     expect(JSON.parse(response.body)['description']).to eq(description)
@@ -305,7 +305,7 @@ RSpec.describe 'Attachments API', :type => :request do
       "Accept" => "application/json",
       "Content-Type" => "application/json"
     }
-    post "api/attachments/upload.json", params, request_headers
+    post "/api/attachments/upload.json", params: params, headers: request_headers
     expect(response.status).to eq(201)    
     expect(JSON.parse(response.body)['id']).to eq(1)
     expect(JSON.parse(response.body)['description']).to eq(description)
@@ -334,7 +334,7 @@ RSpec.describe 'Attachments API', :type => :request do
       "Accept" => "application/json",
       "Content-Type" => "application/json"
     }
-    post "api/attachments/upload.json", params, request_headers
+    post "/api/attachments/upload.json", params: params, headers: request_headers
     expect(response.status).to eq(201)    
     expect(JSON.parse(response.body)['id']).to eq(1)
     expect(JSON.parse(response.body)['description']).to eq(description)
@@ -371,7 +371,7 @@ RSpec.describe 'Attachments API', :type => :request do
       "Accept" => "application/json",
       "Content-Type" => "application/json"
     }
-    post "api/attachments/upload.json", params, request_headers
+    post "/api/attachments/upload.json", params: params, headers: request_headers
     expect(response.status).to eq(200)
     expect(JSON.parse(response.body)['attachments'].count).to eq(2)
     expect(JSON.parse(response.body)['attachments'][0]['file_name']).to eq('test.png')
@@ -404,7 +404,7 @@ RSpec.describe 'Attachments API', :type => :request do
       "Accept" => "application/json",
       "Content-Type" => "application/json"
     }
-    post "api/attachments/upload.json", params, request_headers
+    post "/api/attachments/upload.json", params: params, headers: request_headers
     expect(response.status).to eq(400)
   end
  
@@ -421,7 +421,7 @@ RSpec.describe 'Attachments API', :type => :request do
       "Accept" => "application/json",
       "Content-Type" => "application/json"
     }
-    post "api/attachments/upload.json", params, request_headers
+    post "/api/attachments/upload.json", params: params, headers: request_headers
     expect(response.status).to eq(400)
   end
  
@@ -438,7 +438,7 @@ RSpec.describe 'Attachments API', :type => :request do
       "Accept" => "application/json",
       "Content-Type" => "application/json"
     }
-    post "api/attachments/upload.json", params, request_headers
+    post "/api/attachments/upload.json", params: params, headers: request_headers
     expect(response.status).to eq(400)
   end
  
@@ -459,7 +459,7 @@ RSpec.describe 'Attachments API', :type => :request do
       "Accept" => "application/json",
       "Content-Type" => "application/json"
     }
-    post "api/attachments/update.json", params, request_headers
+    post "/api/attachments/update.json", params: params, headers: request_headers
     expect(response.status).to eq(400) 
   end
 
@@ -481,13 +481,13 @@ RSpec.describe 'Attachments API', :type => :request do
       "Accept" => "application/json",
       "Content-Type" => "application/json"
     }
-    post "api/attachments/update.json", params, request_headers
+    post "/api/attachments/update.json", params: params, headers: request_headers
     expect(response.status).to eq(400) 
   end
 
   it "update successful" do
     @upload_png = Upload.create(@upload_attr_hash_png)
-    @result_2 = Result.create(FactoryGirl.attributes_for(:result_2))
+    @result_2 = Result.create(FactoryBot.attributes_for(:result_2))
     new_description = 'test description 2'
     new_content_type = 'image/jpeg'
     params = {
@@ -506,7 +506,7 @@ RSpec.describe 'Attachments API', :type => :request do
       "Accept" => "application/json",
       "Content-Type" => "application/json"
     }
-    post "api/attachments/update.json", params, request_headers
+    post "/api/attachments/update.json", params: params, headers: request_headers
     expect(response.status).to eq(200)
     expect(JSON.parse(response.body)['description']).to eq(new_description)
     expect(JSON.parse(response.body)['content_type']).to eq(new_content_type)
@@ -518,7 +518,7 @@ RSpec.describe 'Attachments API', :type => :request do
   it "update multiple successful" do
     @upload_png = Upload.create(@upload_attr_hash_png)
     @upload_jpg = Upload.create(@upload_attr_hash_jpg)
-    @result_2 = Result.create(FactoryGirl.attributes_for(:result_2))
+    @result_2 = Result.create(FactoryBot.attributes_for(:result_2))
     new_description = 'test description 3'
     new_content_type = 'image/test'
     params = {
@@ -552,7 +552,7 @@ RSpec.describe 'Attachments API', :type => :request do
       "Accept" => "application/json",
       "Content-Type" => "application/json"
     }
-    post "api/attachments/update.json", params, request_headers
+    post "/api/attachments/update.json", params: params, headers: request_headers
     expect(response.status).to eq(200)
     expect(JSON.parse(response.body)['attachments'].count).to eq(2)
     expect(JSON.parse(response.body)['attachments'][0]['description']).to eq(new_description)
@@ -574,7 +574,7 @@ RSpec.describe 'Attachments API', :type => :request do
       "Accept" => "application/json",
       "Content-Type" => "application/json"
     }
-    post "api/attachments/delete.json", params, request_headers
+    post "/api/attachments/delete.json", params: params, headers: request_headers
     expect(response.status).to eq(400)
   end
  
@@ -589,9 +589,9 @@ RSpec.describe 'Attachments API', :type => :request do
       "Content-Type" => "application/json"
     }
     expect(File.exist?(@upload_png.upload.path)).to eq(true)
-    post "api/attachments/delete.json", params, request_headers
+    post "/api/attachments/delete.json", params: params, headers: request_headers
     expect(response.status).to eq(200)
-    post "api/attachments/search.json", params, request_headers
+    post "/api/attachments/search.json", params: params, headers: request_headers
     expect(response.status).to eq(200)
     expect(JSON.parse(response.body)['found']).to eq(false)
     expect(File.exist?(@upload_png.upload.path)).to eq(false)
@@ -613,14 +613,14 @@ RSpec.describe 'Attachments API', :type => :request do
     }
     expect(File.exist?(@upload_png.upload.path)).to eq(true)
     expect(File.exist?(@upload_jpg.upload.path)).to eq(true)
-    post "api/attachments/delete.json", params, request_headers
+    post "/api/attachments/delete.json", params: params, headers: request_headers
     expect(response.status).to eq(200)
     expect(JSON.parse(response.body)['attachments'].count).to eq(2)
     params = {
       "api_key" => @user.single_access_token,
       'id' => @upload_png.id
     }.to_json    
-    post "api/attachments/search.json", params, request_headers
+    post "/api/attachments/search.json", params: params, headers: request_headers
     expect(response.status).to eq(200)
     expect(JSON.parse(response.body)['found']).to eq(false)
     expect(File.exist?(@upload_png.upload.path)).to eq(false)
@@ -628,7 +628,7 @@ RSpec.describe 'Attachments API', :type => :request do
       "api_key" => @user.single_access_token,
       'id' => @upload_jpg.id
     }.to_json      
-    post "api/attachments/search.json", params, request_headers
+    post "/api/attachments/search.json", params: params, headers: request_headers
     expect(response.status).to eq(200)
     expect(JSON.parse(response.body)['found']).to eq(false)
     expect(File.exist?(@upload_jpg.upload.path)).to eq(false)    

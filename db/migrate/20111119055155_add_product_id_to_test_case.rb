@@ -1,4 +1,4 @@
-class AddProductIdToTestCase < ActiveRecord::Migration
+class AddProductIdToTestCase < ActiveRecord::Migration[4.2]
   def self.up
     add_column :test_cases, :product_id, :integer
   end

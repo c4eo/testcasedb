@@ -6,7 +6,7 @@ class TasksController < ApplicationController
   # GET /tasks.xml
   def my_index
     authorize! :read, Task
-    @tasks = Task.where(:user_id => current_user.id).order(sort_column + " " + sort_direction).page(params[:page]).per(20)
+    @tasks = Task.where(:user_id => current_user.id).order(sort_column + " " + sort_direction).page(permitted_params[:page]).per(20)
 
     render "index"
   end
@@ -15,7 +15,7 @@ class TasksController < ApplicationController
   # GET /tasks.xml
   def index
     authorize! :read, Task
-    @tasks = Task.order(sort_column + " " + sort_direction).page(params[:page]).per(20)
+    @tasks = Task.order(sort_column + " " + sort_direction).page(permitted_params[:page]).per(20)
 
     respond_to do |format|
       format.html # index.html.erb
@@ -26,7 +26,7 @@ class TasksController < ApplicationController
   # GET /tasks/1.xml
   def show
     authorize! :read, Task
-    @task = Task.find(params[:id])
+    @task = Task.find(permitted_params[:id])
     @comment = Comment.new(:task_id => @task.id, :comment => 'Enter a new comment')
     
     respond_to do |format|
@@ -38,7 +38,7 @@ class TasksController < ApplicationController
   # GET /tasks/new.xml
   def new
     authorize! :create, Task
-    @users_select = User.find(:all, :order => "last_name").collect {|u| [ u.first_name + ' ' + u.last_name, u.id ]}
+    @users_select = User.all.order(:last_name).collect {|u| [ u.first_name + ' ' + u.last_name, u.id ]}
     
     @task = Task.new
     respond_to do |format|
@@ -49,16 +49,16 @@ class TasksController < ApplicationController
   # GET /tasks/1/edit
   def edit
     authorize! :update, Task
-    @users_select = User.find(:all, :order => "last_name").collect {|u| [ u.first_name + ' ' + u.last_name, u.id ]}
+    @users_select = User.all.order(:last_name).collect {|u| [ u.first_name + ' ' + u.last_name, u.id ]}
     
-    @task = Task.find(params[:id])    
+    @task = Task.find(permitted_params[:id])    
   end
 
   # POST /tasks
   # POST /tasks.xml
   def create
     authorize! :create, Task
-    @task = Task.new(params[:task])
+    @task = Task.new(permitted_params[:task])
     @comment = Comment.new(:task_id => @task.id, :comment => 'Enter a new comment')
     
     respond_to do |format|
@@ -71,7 +71,7 @@ class TasksController < ApplicationController
           format.html { redirect_to(@task, :flash => { :warning => 'Task was successfully created, but there was an error sending the notification email.'}) }
         end
       else
-        @users_select = User.find(:all, :order => "last_name").collect {|u| [ u.first_name + ' ' + u.last_name, u.id ]}
+        @users_select = User.all.order(:last_name).collect {|u| [ u.first_name + ' ' + u.last_name, u.id ]}
         
         format.html { render :action => "new" }
       end
@@ -82,10 +82,10 @@ class TasksController < ApplicationController
   # PUT /tasks/1.xml
   def update
     authorize! :update, Task
-    @task = Task.find(params[:id])
+    @task = Task.find(permitted_params[:id])
     
     respond_to do |format|
-      if @task.update_attributes(params[:task])
+      if @task.update_attributes(permitted_params[:task])
         # If status is complete, but completion date is blank, set it to today
         if (@task.status == 127) &&  (!@task.completion_date)
           @task.completion_date = Date.today
@@ -94,7 +94,7 @@ class TasksController < ApplicationController
           
         format.html { redirect_to(@task, :notice => 'Task was successfully updated.') }
       else
-        @users_select = User.find(:all, :order => "last_name").collect {|u| [ u.first_name + ' ' + u.last_name, u.id ]}
+        @users_select = User.all.order(:last_name).collect {|u| [ u.first_name + ' ' + u.last_name, u.id ]}
         
         format.html { render :action => "edit" }
       end
@@ -105,7 +105,7 @@ class TasksController < ApplicationController
   # DELETE /tasks/1.xml
   def destroy
     authorize! :destroy, Task
-    @task = Task.find(params[:id])
+    @task = Task.find(permitted_params[:id])
     @task.destroy
 
     respond_to do |format|
@@ -119,10 +119,10 @@ class TasksController < ApplicationController
   # Among other things, these prevent SQL injection
   # Set asc and name as default values
   def sort_column
-    Task.column_names.include?(params[:sort]) ? params[:sort] : "name"
+    Task.column_names.include?(permitted_params[:sort]) ? permitted_params[:sort] : "name"
   end
   
   def sort_direction
-    %w[asc desc].include?(params[:direction]) ? params[:direction] : "asc"
+    %w[asc desc].include?(permitted_params[:direction]) ? permitted_params[:direction] : "asc"
   end
 end

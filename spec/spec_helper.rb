@@ -21,7 +21,6 @@ activate_authlogic
 require 'database_cleaner'
 
 RSpec.configure do |config|
-  #config.use_transactional_fixtures = false
   config.filter_run :focus
   config.run_all_when_everything_filtered = true  
   config.before(:suite) do
@@ -29,17 +28,20 @@ RSpec.configure do |config|
   end
 
   config.before(:each) do
-    DatabaseCleaner.strategy = :truncation
+    # DatabaseCleaner.strategy = :transaction
+    DatabaseCleaner.clean_with(:truncation)
   end
 
   config.before(:each, :js => true) do
-    DatabaseCleaner.strategy = :truncation
+    # DatabaseCleaner.strategy = :truncation
+    DatabaseCleaner.clean_with(:truncation)
+
   end
 
   config.before(:each) do |test_case|
     DatabaseCleaner.start
     unless test_case.metadata[:skip_create_user]
-      @user = FactoryGirl.create(:user)
+      @user = FactoryBot.create(:user)
       UserSession.create(@user) 
     end
   end

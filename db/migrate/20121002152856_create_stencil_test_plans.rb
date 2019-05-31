@@ -1,4 +1,4 @@
-class CreateStencilTestPlans < ActiveRecord::Migration
+class CreateStencilTestPlans < ActiveRecord::Migration[4.2]
   def self.up
     create_table :stencil_test_plans do |t|
       t.integer :stencil_id

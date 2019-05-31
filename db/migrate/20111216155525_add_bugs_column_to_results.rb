@@ -1,4 +1,4 @@
-class AddBugsColumnToResults < ActiveRecord::Migration
+class AddBugsColumnToResults < ActiveRecord::Migration[4.2]
   def self.up
     add_column :results, :bugs, :string
   end

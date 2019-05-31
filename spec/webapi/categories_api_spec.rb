@@ -3,9 +3,9 @@ require "webapi/webapi_spec_helper"
 RSpec.describe 'Categories API', :type => :request do
   
   before(:each) do
-    @product = Product.create(FactoryGirl.attributes_for(:product))
-    @category_attr_hash = FactoryGirl.attributes_for(:category)
-    @sub_category_attr_hash = FactoryGirl.attributes_for(:sub_category)         
+    @product = Product.create(FactoryBot.attributes_for(:product))
+    @category_attr_hash = FactoryBot.attributes_for(:category)
+    @sub_category_attr_hash = FactoryBot.attributes_for(:sub_category)         
   end  
    
   it "search not found" do
@@ -18,7 +18,7 @@ RSpec.describe 'Categories API', :type => :request do
       "Accept" => "application/json",
       "Content-Type" => "application/json"
     }
-    post "api/categories/search.json", params, request_headers
+    post "/api/categories/search.json", params: params, headers: request_headers
     expect(JSON.parse(response.body)['found']).to eq(false)
     expect(response.status).to eq(200) 
   end
@@ -34,7 +34,7 @@ RSpec.describe 'Categories API', :type => :request do
       "Accept" => "application/json",
       "Content-Type" => "application/json"
     }
-    post "api/categories/search.json", params, request_headers
+    post "/api/categories/search.json", params: params, headers: request_headers
     expect(JSON.parse(response.body)['found']).to eq(true)
     expect(response.status).to eq(200) 
   end
@@ -52,7 +52,7 @@ RSpec.describe 'Categories API', :type => :request do
       "Accept" => "application/json",
       "Content-Type" => "application/json"
     }
-    post "api/categories/search.json", params, request_headers
+    post "/api/categories/search.json", params: params, headers: request_headers
     expect(JSON.parse(response.body)['found']).to eq(true)
     expect(JSON.parse(response.body)['category']).to eq(full_category) 
     expect(JSON.parse(response.body)['id']).to eq(@sub_category.id) 
@@ -71,7 +71,7 @@ RSpec.describe 'Categories API', :type => :request do
       "Accept" => "application/json",
       "Content-Type" => "application/json"
     }
-    post "api/categories/create.json", params, request_headers
+    post "/api/categories/create.json", params: params, headers: request_headers
     expect(JSON.parse(response.body)['category']).to eq(category) 
     expect(JSON.parse(response.body)['id']).to eq(1)  
     expect(JSON.parse(response.body)['parent_id']).to eq(nil)
@@ -91,7 +91,7 @@ RSpec.describe 'Categories API', :type => :request do
       "Accept" => "application/json",
       "Content-Type" => "application/json"
     }
-    post "api/categories/create.json", params, request_headers
+    post "/api/categories/create.json", params: params, headers: request_headers
     expect(JSON.parse(response.body)['category']).to eq(category) 
     expect(JSON.parse(response.body)['id']).to eq(2)
     expect(JSON.parse(response.body)['category_hierarchy'].count).to eq(2)  
@@ -109,7 +109,7 @@ RSpec.describe 'Categories API', :type => :request do
       "Accept" => "application/json",
       "Content-Type" => "application/json"
     }
-    post "api/categories/create.json", params, request_headers 
+    post "/api/categories/create.json", params: params, headers: request_headers 
     expect(response.status).to eq(400) 
   end
    

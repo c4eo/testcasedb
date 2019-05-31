@@ -1,4 +1,4 @@
-class CreateResultStatistics < ActiveRecord::Migration
+class CreateResultStatistics < ActiveRecord::Migration[4.2]
   def self.up
     create_table :result_statistics do |t|
       t.integer :result_id

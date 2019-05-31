@@ -3,12 +3,10 @@ class User < ActiveRecord::Base
     # we disabled the validations. HAve to manually validate in new validation function
     # This is to allow blank passwords for users
     # c.merge_validates_length_of_password_field_options :minimum => 8
-    c.validate_password_field = false
     c.logged_in_timeout = TestDB::Application.config.session_timeout.minutes 
   end
   
-  scope :active, where(:active=> true)
-  attr_accessible :username, :email, :password, :first_name, :last_name, :password_confirmation, :role, :active, :time_zone, :product_ids
+  scope :active,  -> { where(:active=> true) }
   validates :username, :presence => true
   validates :username, :uniqueness => true
   validates :email, :presence => true

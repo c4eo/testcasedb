@@ -1,5 +1,4 @@
 class Product < ActiveRecord::Base
-  attr_accessible :name, :description, :user_ids
   
 	has_many :test_plans
 	has_many :versions, :dependent => :destroy

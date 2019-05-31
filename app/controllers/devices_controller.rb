@@ -13,7 +13,7 @@ class DevicesController < ApplicationController
   # GET /devices/1
   # GET /devices/1.xml
   def show
-    @device = Device.find(params[:id])
+    @device = Device.find(permitted_params[:id])
     authorize! :read, @device
     
     @schedules = @device.schedules.order('start_time')
@@ -45,7 +45,7 @@ class DevicesController < ApplicationController
 
   # GET /devices/1/edit
   def edit
-    @device = Device.find(params[:id])
+    @device = Device.find(permitted_params[:id])
     authorize! :update, @device
     
     # We need to make sure that all custom fields exist on this item. If not, we add them.
@@ -62,7 +62,7 @@ class DevicesController < ApplicationController
   # POST /devices
   # POST /devices.xml
   def create
-    @device = Device.new(params[:device])
+    @device = Device.new(permitted_params[:device])
     authorize! :create, @device
     
     respond_to do |format|
@@ -77,11 +77,11 @@ class DevicesController < ApplicationController
   # PUT /devices/1
   # PUT /devices/1.xml
   def update
-    @device = Device.find(params[:id])
+    @device = Device.find(permitted_params[:id])
     authorize! :update, @device
     
     respond_to do |format|
-      if @device.update_attributes(params[:device])
+      if @device.update_attributes(permitted_params[:device])
         format.html { redirect_to(@device, :notice => 'Device was successfully updated.') }
       else
         format.html { render :action => "edit" }
@@ -92,7 +92,7 @@ class DevicesController < ApplicationController
   # DELETE /devices/1
   # DELETE /devices/1.xml
   def destroy
-    @device = Device.find(params[:id])
+    @device = Device.find(permitted_params[:id])
     authorize! :destroy, @product
     
     @device.destroy

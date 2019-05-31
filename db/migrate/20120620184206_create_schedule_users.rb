@@ -1,4 +1,4 @@
-class CreateScheduleUsers < ActiveRecord::Migration
+class CreateScheduleUsers < ActiveRecord::Migration[4.2]
   def self.up
     create_table :schedule_users do |t|
       t.integer :schedule_id

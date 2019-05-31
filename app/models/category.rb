@@ -3,7 +3,6 @@ class Category < ActiveRecord::Base
   # for creating the text for json in the categories controller
   include Rails.application.routes.url_helpers
   
-  attr_accessible :name, :product_id, :category_id
   
   belongs_to :category
   belongs_to :product

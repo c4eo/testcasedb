@@ -15,11 +15,11 @@ class TestCasesController < ApplicationController
     respond_to do |format|
       format.html # index.html.erb
       format.csv do
-        # Test case IDs are sent as params
+        # Test case IDs are sent as permitted_params
         # ex:   :1234 => "1"
         # We looked for all numbered items as test cases and export them
         tc_ids = []
-        params.each do |key,value|
+        permitted_params.each do |key,value|
           if key.to_i != 0 and value == '1'
             tc_ids << key.to_i
           end
@@ -35,7 +35,7 @@ class TestCasesController < ApplicationController
   # GET /test_cases/1
   # GET /test_cases/1.xml
   def show
-    @test_case = TestCase.find(params[:id])
+    @test_case = TestCase.find(permitted_params[:id])
     authorize! :read, @test_case
     
     # Verify user can view this test case. Must be in his product
@@ -67,11 +67,11 @@ class TestCasesController < ApplicationController
 
     # if this page was invoked with a category_id param it means the user clicked a link
     # that should auto fill the category (and product drop down) for them
-    if params[:category_id]
+    if permitted_params[:category_id]
       # To make this work, we set the test case category_id, we figure out which
       # product this category is a sibling of and we produce the list of categories
       # for this product
-      @test_case.category_id = params[:category_id]
+      @test_case.category_id = permitted_params[:category_id]
       @test_case.product_id = get_product_id_from_category_id(@test_case.category_id)
       # The category list for the current product (one of which is selected)
       @categories = category_list(@test_case.product_id, nil)
@@ -93,7 +93,7 @@ class TestCasesController < ApplicationController
   # GET /test_cases/1/edit
   def edit
     # View requires the test cases
-    @test_case = TestCase.find(params[:id])
+    @test_case = TestCase.find(permitted_params[:id])
     @comment = Comment.new(:test_case_id => @test_case.id, :comment => 'Enter a new comment')
     
     # If editing after executed allowed or it has not been executed, allow edit
@@ -136,7 +136,7 @@ class TestCasesController < ApplicationController
   # POST /test_cases
   # POST /test_cases.xml
   def create
-    @test_case = TestCase.new(params[:test_case])
+    @test_case = TestCase.new(permitted_params[:test_case])
     @comment = Comment.new(:test_case_id => @test_case.id, :comment => 'Enter a new comment')
     
     authorize! :create, @test_case
@@ -157,7 +157,7 @@ class TestCasesController < ApplicationController
         History.create(:test_case_id => @test_case.id, :action => 1, :user_id => current_user.id)
         
         # If this is save and add step load edit page for steps to be added
-        if params[:commit] == "Save and Create Additional"
+        if permitted_params[:commit] == "Save and Create Additional"
           format.html { redirect_to(new_test_case_with_category_path(@test_case.category_id), :notice => 'Test case was successfully created. Please create another test case.') }
         # Else, just load the show page
         else 
@@ -180,13 +180,13 @@ class TestCasesController < ApplicationController
   # PUT /test_cases/1
   # PUT /test_cases/1.xml
   def update
-    @test_case = TestCase.find(params[:id])
+    @test_case = TestCase.find(permitted_params[:id])
     authorize! :update, @test_case
     
     # Verify user can view this test case. Must be in his product
     authorize_product!(@test_case.product)
     # Verify that if they change the product, it is changed to a product they have access to.
-    authorize_product!(Product.find(params[:test_case][:product_id]))
+    authorize_product!(Product.find(permitted_params[:test_case][:product_id]))
     
     @comment = Comment.new(:test_case_id => @test_case.id, :comment => 'Enter a new comment')
     
@@ -194,7 +194,7 @@ class TestCasesController < ApplicationController
     @test_case.modified_by = current_user
     
     respond_to do |format|
-      if @test_case.update_attributes(params[:test_case])
+      if @test_case.update_attributes(permitted_params[:test_case])
         # Create item in log history
         # Action type based on value from en.yaml
         History.create(:test_case_id => @test_case.id, :action => 2, :user_id => current_user.id)
@@ -214,7 +214,7 @@ class TestCasesController < ApplicationController
   # DELETE /test_cases/1
   # DELETE /test_cases/1.xml
   def destroy
-    @test_case = TestCase.find(params[:id])
+    @test_case = TestCase.find(permitted_params[:id])
     authorize! :destroy, @test_case
     
     # Verify user can view this test case. Must be in his product
@@ -242,7 +242,7 @@ class TestCasesController < ApplicationController
     authorize! :read, TestCase
     # This is used for the simple search function.
     # Note that this currently utlizes the search module that is contained within the model.
-    if params[:search]
+    if permitted_params[:search]
       # find(:all, :conditions => ['name LIKE ?', "%#{search}%"])
       @test_cases = TestCase.where(:product_id => current_user.products).where('name LIKE ?', "%#{params[:search]}%")
     else
@@ -260,7 +260,7 @@ class TestCasesController < ApplicationController
     # We need to be capture the myriad of issues that can occur with open an excel spreadsheet
     begin
       # open the spread sheet and prepare variables
-      uploaded_io = params[:test_case][:upload]
+      uploaded_io = permitted_params[:test_case][:upload]
       # book = Spreadsheet.open '/Users/marc/Desktop/test_cases.xls'
       book = Spreadsheet.open uploaded_io.open
     
@@ -269,7 +269,7 @@ class TestCasesController < ApplicationController
       @test_cases = []
     
       # Verify a valid product and category were selected
-      if (Product.where(:id => params[:test_case][:product_id]).first == nil) or (Category.where(:id => params[:test_case][:category_id]).first == nil)
+      if (Product.where(:id => permitted_params[:test_case][:product_id]).first == nil) or (Category.where(:id => permitted_params[:test_case][:category_id]).first == nil)
         errors = true
         # An error has occurred. Redirect to import page
         @test_case = TestCase.new
@@ -277,7 +277,7 @@ class TestCasesController < ApplicationController
       # Only analyse if there is a valid xls header
       elsif  check_for_header( sheet1.row(0) ) == true
         # Before we continue on, we must validate that the product is valid and the user didn't try to manually swap the product
-        authorize_product!(Product.where(:id => params[:test_case][:product_id]).first)
+        authorize_product!(Product.where(:id => permitted_params[:test_case][:product_id]).first)
         
         # Predefine these variable so they are not block local variables
         test_case = TestCase.new
@@ -331,7 +331,7 @@ class TestCasesController < ApplicationController
   # and marks the previous case as deprecated
   def create_new_version
     begin 
-      original_test_case = TestCase.find( params[:id] )
+      original_test_case = TestCase.find( permitted_params[:id] )
     
       # Verify user can view this test case. Must be in his product
       authorize_product!(original_test_case.product)
@@ -371,7 +371,7 @@ class TestCasesController < ApplicationController
   # starts as new version with no parent
   def copy
     begin 
-      original_test_case = TestCase.find( params[:id] )
+      original_test_case = TestCase.find( permitted_params[:id] )
       
       # Verify user can view this test case. Must be in his product
       authorize_product!(original_test_case.product)
@@ -396,12 +396,12 @@ class TestCasesController < ApplicationController
     
     # This function takes a product ID and returns a list of categories
     # either JS or HTML is returned.
-    @categories = Category.find_all_by_product_id(params[:product_id], :order => "name")
+    @categories = Category.where(product_id: permitted_params[:product_id]).order(:name)
     
     # It seems unneccessary to get the product as it is related to the categories
     # however, if there are no categories, we still need to know which product we're deling with 
     # so we retrieve the product for the display
-    @product = Product.find(params[:product_id])
+    @product = Product.find(permitted_params[:product_id])
 
     # Verify user can view this test case. Must be in his product
     authorize_product!(@product)
@@ -423,10 +423,10 @@ class TestCasesController < ApplicationController
     # This function takes a category ID and returns a list of sub-categories and test cases
     # either JS or HTML is returned.
     # Pass @category_id to the js view so it knows which div to add code to
-    @category_id = params[:category_id]
+    @category_id = permitted_params[:category_id]
     
     # Find all of the sub categories for this sub-category
-    @categories = Category.find(@category_id).categories(:order => "name")
+    @categories = Category.find(@category_id).categories.order(:name)
     
     # Find all of the test cases for this category
     @testcases = TestCase.where(:category_id => @category_id).includes(:tags)
@@ -445,8 +445,8 @@ class TestCasesController < ApplicationController
   def update_category_select
     authorize! :read, TestCase
     
-    unless params[:id].blank?  
-      @categories = category_list(params[:id], nil) 
+    unless permitted_params[:id].blank?  
+      @categories = category_list(permitted_params[:id], nil) 
     end
     render :partial => "categories"
   end
@@ -550,8 +550,8 @@ class TestCasesController < ApplicationController
     test_case.name = row[0]
     test_case.description = row[1]
     test_case.test_type_id = TestType.where(:name => row[2]).first.id
-    test_case.product_id = params[:test_case][:product_id]
-    test_case.category_id = params[:test_case][:category_id]
+    test_case.product_id = permitted_params[:test_case][:product_id]
+    test_case.category_id = permitted_params[:test_case][:category_id]
     
     # Always set the test case status to 0 (this is draft see en.yml :item_status)
     test_case.status = 0

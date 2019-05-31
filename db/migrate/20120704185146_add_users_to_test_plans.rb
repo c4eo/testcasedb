@@ -1,4 +1,4 @@
-class AddUsersToTestPlans < ActiveRecord::Migration
+class AddUsersToTestPlans < ActiveRecord::Migration[4.2]
   def self.up
     add_column :test_plans, :created_by_id, :integer
     add_column :test_plans, :modified_by_id, :integer

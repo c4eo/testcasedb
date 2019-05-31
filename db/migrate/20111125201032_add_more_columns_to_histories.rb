@@ -1,4 +1,4 @@
-class AddMoreColumnsToHistories < ActiveRecord::Migration
+class AddMoreColumnsToHistories < ActiveRecord::Migration[4.2]
   def self.up
     add_column :histories, :product_id, :integer
     add_column :histories, :category_id, :integer
